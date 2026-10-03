@@ -1,0 +1,1057 @@
+/* ===========================================================================
+   CIRIDAE — the skin
+   Loaded last. index.css and theme/sequel-theme.css are NOT edited; this file
+   re-points the token names they already consume, so the whole design system
+   can be removed by commenting out two imports in main.jsx.
+
+   THE COLLISION RULE
+   Two design systems are live at once: index.css's --ink- / --paper-  set and
+   the portfolio-next kit's --color- / --text-  set. They share names. Rather
+   than fight the cascade, the kit's tokens are re-pointed inside a `.sq { }`
+   block: .sq beats :root on specificity, so Ciridae wins regardless of import
+   order. Never declare the same token in two files.
+
+   THE TWO DOCUMENTED EXCEPTIONS to the system's own rules
+   1. Code is not a UI label. .srcline and .cp-body keep mixed case; the mono
+      register's "uppercase only" rule governs labels and metadata, and
+      uppercasing `const jayesh = { role: ... }` would be wrong when the whole
+      point of the page is that the code is real.
+   2. The skip link stays a filled pill. WCAG wants an unmissable focus
+      affordance and a ghost outline on void is not one. Read it as a fragment
+      of the Bone inversion.
+
+   THE MOTION INVARIANT
+   index.css zeroes every duration under prefers-reduced-motion. So a draw-in's
+   FINAL state must be the CSS default, with the initial state applied only via
+   `[data-reveal]:not(.in)`. Rest a hairline at scaleX(0) and a reduced-motion
+   visitor never sees it at all.
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   1. STRUCTURAL FIXES
+   Why the sky was invisible in the skills section. Not styling choices.
+   --------------------------------------------------------------------------- */
+
+/* NOTE (corrected): an earlier pass added `#stack { isolation: isolate }` here
+   on the theory that `.sq { background-color }` was painting over the
+   z-index:-2 canvas. That was wrong — index.css:397 already sets
+   `isolation: isolate` on `.hero` itself, so the canvas has always been
+   trapped in its own stacking context and `.sq` never occluded it. The rule
+   was redundant and has been removed. The real reason the sky was invisible
+   is the scrim immediately below. */
+
+/* The scrim was tuned against a bright Preetham noon, at which point it needed
+   to be nearly opaque for white type to clear 4.5:1. The sky is graded down to
+   smoke now (see src/scene/state.js), so the same five layers would crush it
+   flat — which is exactly the "no clouds" symptom. Same geometry, Ciridae's
+   void instead of the blue-black, and roughly half the weight. */
+.hero-scrim {
+  background:
+    radial-gradient(ellipse 74% 58% at 26% 44%, rgba(11, 11, 11, 0.62) 0%, rgba(11, 11, 11, 0.46) 36%, rgba(11, 11, 11, 0.18) 62%, rgba(11, 11, 11, 0) 84%),
+    radial-gradient(ellipse 130% 98% at 56% 40%, rgba(11, 11, 11, 0) 46%, rgba(11, 11, 11, 0.24) 100%),
+    linear-gradient(101deg, rgba(11, 11, 11, 0.5) 0%, rgba(11, 11, 11, 0.3) 32%, rgba(11, 11, 11, 0.08) 52%, rgba(11, 11, 11, 0) 70%),
+    linear-gradient(to top, rgba(11, 11, 11, 0.86) 0%, rgba(11, 11, 11, 0.14) 32%, rgba(11, 11, 11, 0) 56%),
+    linear-gradient(to bottom, rgba(11, 11, 11, 0.72) 0%, rgba(11, 11, 11, 0) 24%);
+}
+
+/* A permanent atmospheric field UNDER the canvas, cloned from the reference
+   implementation's hero (three radial fields at 50px blur). It is static, so
+   it costs nothing per frame, it satisfies the spec's literal blur value, and
+   it means any future render stall degrades to ambient atmosphere rather than
+   to a black hole. Nothing was underneath the canvas before. */
+.hero-field {
+  position: absolute;
+  inset: -10%;
+  z-index: -3;
+  pointer-events: none;
+  filter: blur(50px);
+  opacity: 0.55;
+  background:
+    radial-gradient(38% 46% at 26% 38%, #7d2f18 0%, transparent 62%),
+    radial-gradient(34% 40% at 72% 30%, #1f3a56 0%, transparent 64%),
+    radial-gradient(44% 40% at 54% 78%, #3a1d12 0%, transparent 66%),
+    var(--cir-void);
+}
+
+/* ---------------------------------------------------------------------------
+   2. RE-POINT index.css
+   --------------------------------------------------------------------------- */
+
+:root {
+  --ink-0: var(--cir-void);
+  --ink-1: #101010;
+  --ink-2: #161818;
+  --ink-3: var(--cir-charcoal);
+
+  --paper: var(--cir-white);
+  --paper-dim: var(--cir-ash);
+  --paper-mute: var(--cir-steel);
+
+  --accent: var(--cir-ember);
+  --accent-deep: var(--cir-ember);
+
+  --line: var(--cir-hair);
+  --line-strong: var(--cir-ash-hair);
+
+  --glass: rgba(11, 11, 11, 0.72);
+  --glass-hi: rgba(39, 42, 42, 0.82);
+
+  --font-display: var(--cir-font-cond);
+  --font-body: var(--cir-font-body);
+  --font-mono: var(--cir-font-mono);
+
+  --ease: var(--cir-ease);
+  --ease-soft: var(--cir-ease);
+
+  /* Ciridae has no elevation of any kind. */
+  --tshadow: none;
+
+  --shell: var(--cir-shell);
+  --nav-h: var(--cir-head-h);
+}
+
+/* ---------------------------------------------------------------------------
+   3. RE-POINT the portfolio-next kit
+   Scoped to .sq so it outranks the kit's own :root whatever the import order.
+   --------------------------------------------------------------------------- */
+
+.sq {
+  --color-void-black: var(--cir-void);
+  --color-pure-white: var(--cir-white);
+  --color-charcoal: var(--cir-charcoal);
+  --color-graphite: var(--cir-hair);
+  --color-lamp-cream: var(--cir-bone);
+  --color-smoke: var(--cir-ash);
+
+  --font-visueltpro: var(--cir-font-body);
+  /* Retires the italic serif accent: Ciridae has three registers and a
+     Newsreader italic is not one of them. */
+  --font-bradford: var(--cir-font-body);
+
+  /* THE TYPE CEILING. Every fluid clamp() collapses to a fixed value — which
+     is what makes the ceiling testable at any viewport, since Ciridae has no
+     fluid type at all. --text-display alone takes the masthead from 128px to
+     32px without touching a single component. */
+  --text-caption: var(--cir-t-caption);
+  --text-label-sm: var(--cir-t-caption);
+  --text-label: var(--cir-t-sm);
+  --text-small-caps: var(--cir-t-sm);
+  --text-nav: var(--cir-t-sm);
+  --text-body: var(--cir-t-body);
+  --text-body-lg: var(--cir-t-body-lg);
+  --text-card-title: var(--cir-t-h-sm);
+  --text-subheading: var(--cir-t-h);
+  --text-heading: var(--cir-t-body-lg);
+  --text-heading-lg: var(--cir-t-h-lg);
+  --text-display: var(--cir-t-h-lg);
+
+  --leading-display: 1.05;
+  --leading-heading-lg: 1.1;
+  --tracking-display: var(--cir-track);
+  --tracking-heading-lg: var(--cir-track);
+  --tracking-subheading: var(--cir-track);
+  --tracking-caption: 0.08em;
+  --tracking-label-sm: 0.12em;
+  --tracking-small-caps: 0.08em;
+
+  /* Only one weight is loaded, so bold is physically unavailable. Making the
+     tokens agree stops a component asking for something the font cannot do
+     and getting a synthesised faux-bold instead. */
+  --font-weight-light: 400;
+  --font-weight-regular: 400;
+  --font-weight-medium: 400;
+
+  --radius-buttons: var(--cir-r-pill);
+  --radius-badges: var(--cir-r-pill);
+  --radius-full: var(--cir-r-pill);
+  --radius-cards: var(--cir-r-lg);
+  --radius-lg: var(--cir-r-lg);
+  --radius-inputs: 0px;
+
+  /* Flattens the kit outright: the cream button and the glass badge were the
+     only two things carrying elevation. */
+  --shadow-xl: none;
+  --shadow-lg: none;
+
+  --ease-film: var(--cir-ease);
+  --duration-state: var(--cir-d-state);
+  --duration-enter: var(--cir-d-enter);
+
+  --page-max-width: var(--cir-max);
+}
+
+/* ---------------------------------------------------------------------------
+   4. NO BOLD
+   There are literal <b> tags in .facts, .film-chap-body, .film-notes and the
+   ticker. Only weight 400 is loaded, so these would otherwise render as
+   synthesised faux-bold — the one way to break the single-weight rule without
+   writing a font-weight anywhere.
+   --------------------------------------------------------------------------- */
+
+b,
+strong,
+.sq b,
+.sq strong,
+.skip,
+.link-label,
+.proj-stack li,
+.chips li,
+.links li {
+  font-weight: 400;
+}
+
+/* The serif italic accent has no register in Ciridae: there are three faces
+   and an italic is not one of them. */
+.sq-accent,
+em,
+i {
+  font-style: normal;
+}
+
+/* ---------------------------------------------------------------------------
+   5. BASE
+   --------------------------------------------------------------------------- */
+
+body {
+  background: var(--cir-void);
+  color: var(--cir-white);
+  font-family: var(--cir-font-body);
+  font-size: var(--cir-t-body);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: var(--cir-track-body);
+}
+
+::selection {
+  background: var(--cir-ember);
+  color: var(--cir-white);
+}
+
+:focus-visible {
+  outline: 1px solid var(--cir-ember);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+   6. THE THREE REGISTERS
+   Oswald  — ALWAYS uppercase. Headings, nav, buttons, badges, eyebrows.
+   Inter   — mixed-case prose only.
+   Roboto Mono — 11px only, uppercase, system data only.
+   They never cross. A nav label in mono would read as broken; a news
+   announcement in Oswald would read as a headline.
+
+   Everything below also enforces the 32px ceiling. Every clamp() on type is
+   replaced with a fixed value: Ciridae has no fluid type, and that is exactly
+   what makes the ceiling assertable at any viewport width.
+   --------------------------------------------------------------------------- */
+
+/* -- cond: headings ------------------------------------------------------ */
+.h2,
+.h2-wide,
+.h2-big,
+.hero-h1,
+.sq-hero__title,
+.proj-name,
+.job-title,
+.disc-h,
+.tcard-name,
+.facts b,
+.film-notes b,
+.film-chap-body b,
+.job-co {
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+}
+
+.h2,
+.h2-wide,
+.h2-big,
+.hero-h1,
+.sq-hero__title {
+  font-size: var(--cir-t-h-lg);
+  line-height: 1.1;
+}
+
+.proj-name,
+.job-title,
+.facts b,
+.film-notes b {
+  font-size: var(--cir-t-h);
+  line-height: 1.2;
+}
+
+.disc-h,
+.tcard-name,
+.film-chap-body b {
+  font-size: var(--cir-t-h-sm);
+  line-height: 1.3;
+}
+
+/* Oswald is far narrower than Inter, so a ch-based max-width holds roughly a
+   fifth more characters per line. These are widened to match. */
+.h2 { max-width: 30ch; }
+.h2-wide { max-width: 36ch; }
+.hero-h1 { max-width: 24ch; }
+
+/* -- body: prose --------------------------------------------------------- */
+.lede,
+.hero-sub,
+.sq-hero__headline,
+.proj-desc,
+.job-points li,
+.disc li,
+.disc-line,
+.tcard-blurb,
+.film-chap-body,
+.about-main p {
+  font-family: var(--cir-font-body);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: var(--cir-track-body);
+}
+
+.lede,
+.hero-sub,
+.sq-hero__headline {
+  font-size: var(--cir-t-body-lg);
+  line-height: 1.55;
+  color: var(--cir-ash);
+  max-width: 62ch;
+}
+
+.proj-desc,
+.job-points li,
+.disc li,
+.disc-line,
+.tcard-blurb,
+.film-chap-body {
+  font-size: var(--cir-t-body);
+  line-height: 1.6;
+  color: var(--cir-ash);
+}
+
+/* -- mono: system data ---------------------------------------------------
+   11px, uppercase, everywhere it appears. The one exception is code, handled
+   further down: uppercasing real source would be a lie about what it is. */
+.linkish,
+.job-when,
+.proj-kind,
+.proj-year,
+.link-value,
+.foot-meta,
+.facts span,
+.picker-count,
+.cp-name,
+.sq-label,
+.film-chap-at {
+  font-family: var(--cir-font-mono);
+  font-weight: 400;
+  font-size: var(--cir-t-caption);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track-mono);
+  color: var(--cir-ash);
+}
+
+/* EXCEPTION 1: code is not a UI label. */
+.srcline,
+.cp-body,
+.cp-body * {
+  font-family: var(--cir-font-mono);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.srcline {
+  font-size: var(--cir-t-caption);
+  color: var(--cir-ash);
+}
+
+/* The panel is real syntax-highlighted source. Ciridae permits one chromatic
+   colour, so the highlighting is desaturated rather than recoloured: the
+   token STRUCTURE still reads, it just stops being a second palette. */
+.cp-body {
+  filter: grayscale(1) contrast(1.05);
+}
+
+/* ---------------------------------------------------------------------------
+   7. CONTROLS
+   One button size. Ghost only: "do not use color fills on buttons". The 1440px
+   stadium is the signature, and min-height keeps the 44px touch target that
+   Ciridae's own 10px padding would otherwise miss.
+   --------------------------------------------------------------------------- */
+
+.btn,
+.btn-small,
+.btn-big,
+.btn-primary,
+.btn-ghost,
+.chip,
+.sq-btn-primary,
+.sq-nav-link,
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--cir-white);
+  border-radius: var(--cir-r-pill);
+  box-shadow: none;
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  font-size: var(--cir-t-sm);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-white);
+  transition: border-color var(--cir-d-state) var(--cir-ease),
+    color var(--cir-d-state) var(--cir-ease);
+}
+
+.btn-big { padding: 12px 28px; min-height: 48px; }
+
+.btn:hover,
+.btn-small:hover,
+.btn-big:hover,
+.btn-primary:hover,
+.btn-ghost:hover,
+.sq-btn-primary:hover,
+.pill-btn:hover {
+  background: transparent;
+  border-color: var(--cir-ember);
+  color: var(--cir-ember);
+}
+
+/* No transform on press: the system has no springs and nothing moves on an
+   axis it was not laid out on. */
+.btn:active,
+.btn-primary:active,
+.btn-ghost:active,
+.chip:active,
+.sq-btn-primary:active {
+  transform: none;
+  opacity: 0.7;
+  transition-duration: var(--cir-d-tap);
+}
+
+/* Nav links are pills too, but quieter: a border here would put five stadiums
+   in a row across the header. */
+.sq-nav-link {
+  border-color: transparent;
+  padding: 10px 14px;
+  color: var(--cir-ash);
+}
+.sq-nav-link:hover { border-color: transparent; color: var(--cir-ember); }
+
+.sq-header__brand {
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  font-size: var(--cir-t-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-white);
+}
+
+/* The glass badge loses its blur and its shadow: both are forbidden, and the
+   badge is a pill badge in this system, not a frosted chip. */
+.sq-badge-glass,
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  border: 1px solid var(--cir-ash-hair);
+  border-radius: var(--cir-r-pill);
+  padding: 5px 11px;
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  font-size: var(--cir-t-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-ash);
+}
+
+/* The availability dot becomes the constellation's diamond, in ember. */
+.pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid var(--cir-ember);
+  rotate: 45deg;
+}
+.pip::after { display: none; }
+
+/* Text links: mono, and the underline draws rather than appearing. */
+.linkish {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--cir-d-state) var(--cir-ease);
+}
+.linkish::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  height: 1px;
+  background: var(--cir-ember);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--cir-d-state) var(--cir-ease-mech);
+}
+.linkish:hover { color: var(--cir-ember); }
+.linkish:hover::after { transform: scaleX(1); }
+
+/* EXCEPTION 2: the skip link stays a filled pill. */
+.skip:focus {
+  background: var(--cir-bone);
+  color: var(--cir-void);
+  border-color: var(--cir-bone);
+}
+
+/* ---------------------------------------------------------------------------
+   8. SURFACES
+   Flat fields only. Cards are rounded-rect (content); nothing is a pill unless
+   you can click it. No shadow anywhere, on anything.
+   --------------------------------------------------------------------------- */
+
+.proj,
+.tcard,
+.film-frame,
+.film-side,
+.hero-console,
+.picker,
+.cp,
+.stage-slot,
+.sq-hero__media {
+  box-shadow: none;
+}
+
+.picker,
+.proj,
+.film-side {
+  background: var(--cir-charcoal);
+  border: 0;
+  border-radius: var(--cir-r-lg);
+}
+
+/* Ember appears only as a hairline. Never a fill, anywhere in the system. */
+.job-co,
+.proj-year {
+  color: var(--cir-ember);
+}
+
+/* Section heads get the ember rule that is Ciridae's one accent gesture.
+   Note the resting state is scaleX(1): see THE MOTION INVARIANT at the top.
+   The zero state is applied only while the section is un-revealed, so a
+   reduced-motion visitor — for whom `.in` may never arrive — still sees it. */
+.h2::after,
+.hero-h1::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 1px;
+  margin-top: 18px;
+  background: var(--cir-ember);
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform var(--cir-d-draw) var(--cir-ease-mech);
+}
+
+/* Project screenshots: grey at rest, colour on intent. Nothing else on the
+   page is chromatic, so an unprompted screenshot would be the loudest thing
+   in the composition. */
+.proj-shot img {
+  filter: grayscale(1) contrast(1.04);
+  transition: filter 420ms var(--cir-ease);
+}
+.proj:hover .proj-shot img,
+.proj:focus-within .proj-shot img {
+  filter: grayscale(0) contrast(1);
+}
+
+/* The one light break. Bone, on the page's single call to action — the 32px
+   ceiling takes size away as an emphasis tool, so the CTA needs tone instead. */
+.sec-contact {
+  background: var(--cir-bone);
+  color: var(--cir-void);
+}
+.sec-contact .h2,
+.sec-contact .h2-big,
+.sec-contact .h2-wide { color: var(--cir-void); }
+.sec-contact .lede,
+.sec-contact .link-value,
+.sec-contact .srcline { color: var(--cir-steel); }
+.sec-contact .link-label { color: var(--cir-steel); }
+.sec-contact .btn,
+.sec-contact .btn-primary,
+.sec-contact .btn-ghost {
+  border-color: var(--cir-void);
+  color: var(--cir-void);
+}
+.sec-contact .btn:hover,
+.sec-contact .btn-primary:hover,
+.sec-contact .btn-ghost:hover {
+  border-color: var(--cir-ember);
+  color: var(--cir-ember);
+}
+.sec-contact .h2::after { background: var(--cir-ember); }
+
+/* ---------------------------------------------------------------------------
+   9. THE CHIPS
+   Monochrome at rest. The technology's own colour is spent only on the
+   diamond, and only once you show intent — which keeps "one chromatic colour"
+   true of the page as composed, while the brand marks stay honest.
+   --------------------------------------------------------------------------- */
+
+.chip {
+  border-color: var(--cir-ash-hair);
+  color: var(--cir-ash);
+  gap: 10px;
+  padding: 10px 16px;
+}
+
+/* The constellation motif, at chip scale. */
+.chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid var(--tech, var(--cir-ash));
+  rotate: 45deg;
+  transition: rotate var(--cir-d-state) var(--cir-ease-mech),
+    background-color var(--cir-d-state) var(--cir-ease);
+}
+
+.chip:hover:not([disabled]) {
+  border-color: var(--cir-white);
+  color: var(--cir-white);
+}
+/* Orthogonal, mechanical, and it echoes the four-point mark. */
+.chip:hover:not([disabled]) .chip-dot { rotate: 135deg; }
+
+.chip[data-active='true'] {
+  border-color: var(--cir-ember);
+  color: var(--cir-ember);
+}
+.chip[data-active='true'] .chip-dot {
+  background: var(--tech, var(--cir-ember));
+  border-color: var(--tech, var(--cir-ember));
+}
+
+.chip[data-landed='true'] {
+  border-color: rgba(206, 206, 206, 0.2);
+  color: var(--cir-steel);
+  opacity: 1;
+}
+.chip[data-landed='true'] .chip-dot {
+  background: var(--cir-ember);
+  border-color: var(--cir-ember);
+  opacity: 0.45;
+}
+
+.picker-title {
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  font-size: var(--cir-t-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-ash);
+}
+
+/* The run hairline. Hero.jsx writes --run once per frame from the GSAP
+   timeline's own progress, so the click produces a precise mechanical stroke
+   in the system's only accent for the whole sequence — no React renders, and
+   no glow, which the system forbids. */
+.picker {
+  position: relative;
+}
+.picker::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--cir-ember);
+  transform: scaleX(var(--run, 0));
+  transform-origin: left;
+  border-bottom-left-radius: var(--cir-r-lg);
+  border-bottom-right-radius: var(--cir-r-lg);
+}
+
+/* The scroll cue: a ghost pill with an ember bar, not a rounded capsule. */
+.scroll-cue {
+  border: 1px solid var(--cir-ash-hair);
+  border-radius: var(--cir-r-pill);
+}
+.scroll-cue span { background: var(--cir-ember); }
+
+/* ---------------------------------------------------------------------------
+   10. MOTION
+   The spec has no motion section, so this is invention held to the system's
+   character: orthogonal, precise, mechanical. Short travel (14px, not 22px),
+   one axis at a time, never diagonal, no spring, no overshoot, no bounce.
+   Scale is used only on hairlines; blur only on imagery.
+
+   READ THE MOTION INVARIANT at the top of this file before adding anything
+   here. Every draw-in rests at its FINAL state; the zero state is applied
+   only under `[data-reveal]:not(.in)`.
+   --------------------------------------------------------------------------- */
+
+[data-reveal] {
+  transform: translateY(var(--cir-lift));
+  transition: opacity var(--cir-d-enter-lg) var(--cir-ease),
+    transform var(--cir-d-enter-lg) var(--cir-ease);
+}
+
+/* Section heads: the eyebrow leads, the heading follows, the ember rule draws
+   last and left-to-right. */
+[data-reveal]:not(.in) .h2::after,
+[data-reveal]:not(.in) .hero-h1::after {
+  transform: scaleX(0);
+}
+
+/* Experience: the spine draws downward, row by row, as you scroll. This is the
+   clearest answer to "there is no movement in between anything" — the page
+   literally draws the connection between one row and the next. */
+.job { position: relative; }
+.job::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--cir-ember);
+  opacity: 0.5;
+  transform: scaleY(1);
+  transform-origin: top;
+  transition: transform var(--cir-d-draw) var(--cir-ease-mech);
+}
+[data-reveal]:not(.in).job::after { transform: scaleY(0); }
+
+/* Contact: the Bone light break wipes down over the void. A pure tonal
+   arrival — no colour, no scale, and it is the page's punctuation. */
+.sec-contact {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path var(--cir-d-enter-lg) var(--cir-ease-mech);
+}
+[data-reveal]:not(.in).sec-contact { clip-path: inset(0 0 100% 0); }
+
+/* Staggered children. 40ms for the ten chips so the whole row lands in 400ms;
+   60ms elsewhere. */
+.chips [data-reveal],
+.film-chapters [data-reveal] { transition-delay: calc(var(--i, 0) * 40ms); }
+
+.sq-hero__text > * { transition-delay: calc(var(--i, 0) * var(--cir-stagger)); }
+
+/* The masthead's atmosphere settles rather than appears: the spec's own 50px
+   blur value arrives over 1.6s instead of being there from the first frame. */
+.sq-hero__media {
+  transition: filter 1600ms var(--cir-ease);
+}
+[data-reveal]:not(.in) .sq-hero__media,
+.sq-hero:not(.in) .sq-hero__media { filter: blur(70px); }
+
+/* The canvas's own entrance. A flat void panel over the sky, lifted once the
+   scene reports warm — never an opacity transition on the WebGL element's own
+   ancestor, which would force a composite on every frame of the fade. */
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--cir-void);
+  opacity: 1;
+  transition: opacity 1200ms var(--cir-ease);
+}
+.hero[data-warm='true'] .hero-veil { opacity: 0; }
+
+/* ---------------------------------------------------------------------------
+   11. REDUCED MOTION
+   index.css zeroes every duration, which would leave anything resting at
+   scale 0 or a full clip-path inset permanently invisible. These force the
+   final state directly. Written here so index.css stays untouched.
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal]:not(.in) .h2::after,
+  [data-reveal]:not(.in) .hero-h1::after,
+  [data-reveal]:not(.in).job::after {
+    transform: none !important;
+  }
+  [data-reveal]:not(.in).sec-contact { clip-path: none !important; }
+  [data-reveal]:not(.in) .sq-hero__media,
+  .sq-hero:not(.in) .sq-hero__media { filter: blur(50px) !important; }
+  .hero-veil { opacity: 0 !important; }
+  /* Was `.newsbar-ticker` (hyphen), which matched nothing: the class is BEM
+     `.newsbar__ticker`. The working copy of this rule is in the reduced-motion
+     block further down; corrected here so the two agree. */
+  .newsbar__ticker { clip-path: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   12. THE CONTACT GRID ON BONE
+   .links paints its cells from --ink-1, which is correct on the void and
+   unreadable on the Bone inversion: dark boxes with dark text. On the light
+   break the grid becomes what Ciridae would draw anyway — hairline-separated
+   cells, no fills, one ember rule per row on hover.
+   --------------------------------------------------------------------------- */
+
+.sec-contact .links {
+  background: rgba(72, 72, 72, 0.22);
+  border-color: rgba(72, 72, 72, 0.22);
+  border-radius: var(--cir-r-lg);
+}
+.sec-contact .links a {
+  background: var(--cir-bone);
+  transition: background var(--cir-d-state) var(--cir-ease),
+    color var(--cir-d-state) var(--cir-ease);
+}
+.sec-contact .links a:hover { background: var(--cir-bone-dark); }
+.sec-contact .links a:hover .link-value { color: var(--cir-ember); }
+.sec-contact .link-label { color: var(--cir-steel); }
+.sec-contact .link-value { color: var(--cir-void); }
+
+/* auto-fit leaves a dead cell when the last row is short; four across keeps
+   the grid square at every width the section is actually used at. */
+.sec-contact .links {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+/* The typed line and its caret sit on Bone here too. */
+.sec-contact .srcline-caret { background: var(--cir-ember); }
+
+/* ---------------------------------------------------------------------------
+   13. RESPONSIVE
+   --cir-shell tightens the way the reference implementation does. Nothing
+   about the type scale changes: Ciridae has no fluid type, and the 32px
+   ceiling has to hold at 375 exactly as it does at 1440.
+   --------------------------------------------------------------------------- */
+
+@media (max-width: 820px) {
+  :root { --cir-shell: min(var(--cir-max), 100% - 32px); }
+}
+
+/* ---------------------------------------------------------------------------
+   14. THE NEWS BAR
+   Abyss strip, system voice, one sharp-cornered control. The button is the
+   only 0px radius in the whole design — pill means interactive everywhere
+   else, so the square corner marks this as the system's own affordance
+   rather than the brand's.
+   --------------------------------------------------------------------------- */
+
+.newsbar {
+  background: var(--cir-abyss);
+  position: relative;
+  z-index: 60;
+}
+.newsbar__in {
+  width: var(--cir-shell);
+  margin: 0 auto;
+  min-height: var(--cir-newsbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+}
+.newsbar__ticker {
+  margin: 0;
+  font-family: var(--cir-font-mono);
+  font-weight: 400;
+  font-size: var(--cir-t-caption);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track-mono);
+  color: var(--cir-ash);
+  /* "prints" left to right on load. clip-path rather than width so the text
+     never reflows mid-animation. */
+  clip-path: inset(0 0 0 0);
+  animation: cir-print var(--cir-d-draw) var(--cir-ease-mech) 200ms both;
+}
+@keyframes cir-print {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+/* Ember as a small text highlight: permitted, and the only colour up here. */
+.newsbar__ticker b { color: var(--cir-ember); }
+.newsbar__ticker i { font-style: normal; margin: 0 8px; opacity: 0.55; }
+
+/* RETIRED with the button itself (theme/components/NewsBar.jsx): the bar is
+   the system's voice, not a place to sell. Kept for reference. */
+/* .newsbar__btn { */
+/*   flex: none; */
+/*   display: inline-flex; */
+/*   align-items: center; */
+/*   min-height: 30px; */
+/*   padding: 8px 20px; */
+/*   background: var(--cir-abyss); */
+/*   border: 1px solid var(--cir-white); */
+/*   border-radius: 0; */
+/*   font-family: var(--cir-font-cond); */
+/*   font-size: var(--cir-t-sm); */
+/*   line-height: 1; */
+/*   text-transform: uppercase; */
+/*   letter-spacing: var(--cir-track); */
+/*   color: var(--cir-white); */
+/*   transition: border-color var(--cir-d-state) var(--cir-ease), */
+/*     color var(--cir-d-state) var(--cir-ease); */
+/* } */
+/* .newsbar__btn:hover { border-color: var(--cir-ember); color: var(--cir-ember); } */
+
+/* The header was fixed, which put it on top of the strip. Sticky keeps both
+   visible and leaves SiteHeader's own scroll observer working unchanged.
+   Keep z-index above the hero's absolute layers (fx canvas is z-index: 2) so
+   Email me / nav stay clickable when the masthead sits under the sticky bar. */
+.sq-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  pointer-events: auto;
+}
+.sq-header__cta {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+/* ---------------------------------------------------------------------------
+   15. THE MASTHEAD
+   Triadic: micro-label, centred constellation, micro-label.
+   --------------------------------------------------------------------------- */
+
+.sq-hero {
+  /* HERO SEQUENCE: superseded by theme/hero-sequence.css's `min-height: 100svh`.
+     Identical specificity, so import order is the only tiebreak (main.jsx loads
+     it after this file) -- commented here as well so the sequence cannot end up
+     composed against the wrong horizon if that order ever changes silently. */
+  /* min-height: 78svh; */
+  /* display/place-items must STAY: hero-sequence.css sets `align-self: stretch`
+     on the row, which is meaningless outside a grid parent. */
+  display: grid;
+  place-items: center;
+}
+.sq-hero__row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 40px;
+  width: var(--cir-shell);
+}
+.sq-hero__text {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 18px;
+}
+.sq-hero__title,
+.sq-hero__headline,
+.sq-badge-glass {
+  margin: 0;
+}
+.sq-hero__headline { max-width: 52ch; }
+
+.cir-flank {
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  font-size: var(--cir-t-sm);
+  line-height: 1.43;
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-white);
+}
+.cir-flank--l { justify-self: start; }
+.cir-flank--r { justify-self: end; text-align: right; }
+
+/* The flanks converge inward rather than rising: the composition closes on
+   the mark, which is the one thing the entrance should point at. */
+.cir-flank { transition: opacity var(--cir-d-enter) var(--cir-ease), translate var(--cir-d-enter) var(--cir-ease); }
+/* HERO SEQUENCE: [data-reveal] moved off .sq-hero__text and ONTO .sq-hero__row
+   itself (theme/components/HeroVideo.jsx), so :has() looking for a DESCENDANT
+   carrying it never matches again. Working replacements that match the row
+   directly live in theme/hero-sequence.css:79-80. Kept, not deleted.
+   The `.cir-flank { transition }` rule above must stay live -- those
+   replacements set opacity/translate with no transition of their own. */
+/* .sq-hero__row:has([data-reveal]:not(.in)) .cir-flank--l { opacity: 0; translate: calc(var(--cir-lift) * -1) 0; } */
+/* .sq-hero__row:has([data-reveal]:not(.in)) .cir-flank--r { opacity: 0; translate: var(--cir-lift) 0; } */
+
+/* The mark draws: the centre diamond strokes itself in, then the four points
+   travel outward. Ember for the first beat, then white — the accent marks the
+   arrival and then gets out of the way. */
+.cir-mark { color: var(--cir-white); display: block; }
+.cir-mark__core {
+  stroke-dasharray: 104;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset var(--cir-d-enter-lg) var(--cir-ease-mech),
+    stroke 200ms linear;
+}
+.cir-mark__pt {
+  opacity: 1;
+  scale: 1;
+  transform-origin: center;
+  transition: opacity var(--cir-d-enter) var(--cir-ease) calc(var(--i) * var(--cir-stagger)),
+    scale var(--cir-d-enter) var(--cir-ease-mech) calc(var(--i) * var(--cir-stagger));
+}
+[data-reveal]:not(.in) .cir-mark__core {
+  stroke-dashoffset: 104;
+  stroke: var(--cir-ember);
+}
+[data-reveal]:not(.in) .cir-mark__pt { opacity: 0; scale: 0.2; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal]:not(.in) .cir-mark__core { stroke-dashoffset: 0 !important; }
+  [data-reveal]:not(.in) .cir-mark__pt { opacity: 1 !important; scale: 1 !important; }
+  /* HERO SEQUENCE: same :has() breakage as the two rules above, and
+     hero-sequence.css ships no replacement for this one. Restated against the
+     new shape so THE MOTION INVARIANT still holds: under reduced motion the
+     flanks rest at their FINAL state and never sit at opacity 0 waiting for an
+     .in that may never arrive. !important beats hero-sequence.css:79-80. */
+  /* .sq-hero__row:has([data-reveal]:not(.in)) .cir-flank { opacity: 1 !important; translate: none !important; } */
+  .sq-hero__row[data-reveal]:not(.in) .cir-flank { opacity: 1 !important; translate: none !important; }
+  .newsbar__ticker { animation: none !important; clip-path: none !important; }
+}
+
+@media (max-width: 900px) {
+  .sq-hero__row { grid-template-columns: 1fr; }
+  .cir-flank { display: none; }
+  .newsbar__in { flex-direction: column; align-items: flex-start; }
+  /* .newsbar__btn { width: 100%; justify-content: center; } */
+}
+
+/* Project tag pills: interactive-shaped, so they take the stadium. */
+.proj-stack li {
+  border-radius: var(--cir-r-pill);
+  border: 1px solid var(--cir-ash-hair);
+  background: transparent;
+  font-family: var(--cir-font-cond);
+  font-size: var(--cir-t-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-ash);
+}
+
+/* The masthead's atmosphere drifts against the scroll. 8vh only: this is a
+   tonal field, not a parallax effect, and anything larger would read as the
+   photograph moving rather than the air. --p is written by scrollDriver.js. */
+.sq-hero__media[data-parallax] {
+  transform: translate3d(0, calc(var(--p, 0) * 8vh), 0);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sq-hero__media[data-parallax] { transform: none !important; }
+}

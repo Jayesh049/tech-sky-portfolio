@@ -1,0 +1,918 @@
+/* ===========================================================================
+   THE SKILLS SKY: pick a technology, watch it build something
+   Styles for the section Hero.jsx renders inside #stack: the storm-to-clear
+   light layers, the flight out of the selector, the stage (code window,
+   build scene, compile panel, expertise, final summary) and the status line.
+   The build scenes themselves are styled in skills-scenes.css.
+
+   Loads after theme-ciridae.css (see main.jsx). Everything is .sky-hero
+   scoped. Type follows the Ciridae ceiling: nothing above 32px, nothing
+   heavier than 400.
+   =========================================================================== */
+
+.sky-hero {
+  --white: 0; /* written every frame by StormField while the sky changes */
+  --sky-cyan: #9fe8ff;
+  --sky-amber: #f2b36b;
+  --sky-hot: #ffd9a8;
+  --sky-panel: rgba(9, 12, 19, 0.94);
+  --sky-line: rgba(159, 232, 255, 0.2);
+  --sky-grad: linear-gradient(100deg, #fbe2bb 0%, #f2b36b 55%, #d98f4a 100%);
+  /* The middle of the space left of the picker: where the stage is centred. */
+  /* Twenty technologies: the selector column is 400px wide, not 360. */
+  --free-w: calc(var(--shell) - 448px);
+  --free-cx: calc(50% - 224px);
+  --duo-w: min(430px, calc(var(--free-w) / 2 - 12px));
+  --stage-y: 53%;
+}
+
+/* ── Light layers ────────────────────────────────────────────────────────── */
+
+/* The dark scrim fades out as the storm clears. It is lighter than the old
+   grade even in the storm, so the clouds show; the field behind the copy
+   still holds the headline well above 4.5:1 (scripts/selftest.mjs [6]). */
+.sky-hero .hero-scrim {
+  opacity: calc((1 - var(--white) * 0.92) * 0.78);
+}
+
+/* ...and the clear-sky light fades in: warm sun top right, a pale field
+   where the copy sits so dark type holds its contrast, a soft blue-white
+   wash over everything. */
+.sky-hero .sky-haze {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--white);
+  background:
+    radial-gradient(46% 42% at 70% 16%, rgba(255, 234, 204, 0.55), transparent 72%),
+    radial-gradient(ellipse 58% 60% at 22% 50%, rgba(246, 248, 251, 0.8), rgba(246, 248, 251, 0.42) 46%, transparent 80%),
+    linear-gradient(180deg, rgba(206, 220, 236, 0.16), rgba(255, 255, 255, 0.06) 58%, rgba(247, 249, 252, 0.35));
+}
+
+.sky-hero .sky-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* over the sky, under the grid and the stage: never over text */
+  pointer-events: none;
+}
+.sky-hero .sky-fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── The headline: the accent word, and dark ink on the white sky ────────── */
+
+.sky-hero .hero-hi {
+  background: var(--sky-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sky-hero[data-sky='clear'] .hero-copy {
+  text-shadow: none;
+}
+.sky-hero[data-sky='clear'] .hero-copy .hero-h1 {
+  color: #0e1116;
+}
+.sky-hero[data-sky='clear'] .hero-copy .hero-hi {
+  background: linear-gradient(100deg, #b4631f, #8f4a12);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.sky-hero[data-sky='clear'] .hero-copy .hero-sub,
+.sky-hero[data-sky='clear'] .hero-copy .eyebrow {
+  color: #2b323c;
+}
+.sky-hero[data-sky='clear'] .hero-copy .eyebrow {
+  border-color: rgba(14, 17, 22, 0.3);
+}
+.sky-hero[data-sky='clear'] .hero-copy .btn {
+  border-color: #0e1116;
+  color: #0e1116;
+}
+.sky-hero[data-sky='clear'] .hero-copy .btn:hover {
+  border-color: var(--cir-ember);
+  color: var(--cir-ember);
+}
+.sky-hero[data-sky='clear'] .scroll-cue {
+  border-color: rgba(14, 17, 22, 0.35);
+}
+
+/* ── The selector ────────────────────────────────────────────────────────── */
+
+@media (min-width: 1081px) {
+  .sky-hero .hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  }
+}
+/* Twenty chips: tighter on a mouse, still 44px on touch (index.css). */
+@media (pointer: fine) {
+  .sky-hero .chips {
+    gap: 6px;
+  }
+  .sky-hero .chip {
+    min-height: 34px;
+    padding: 7px 12px;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+}
+
+.sky-hero .chip {
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease), transform 0.25s var(--ease),
+    box-shadow 0.3s var(--ease), background-color 0.2s var(--ease), opacity 0.3s var(--ease);
+}
+.sky-hero .chip:hover:not([disabled]) {
+  transform: scale(1.04);
+  border-color: color-mix(in srgb, var(--tech) 70%, white);
+  color: #fff;
+  box-shadow: 0 0 18px -6px var(--tech);
+}
+.sky-hero .chip[data-active='true'] {
+  border-color: var(--tech);
+  color: #fff;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tech) 40%, transparent), 0 0 24px -6px var(--tech);
+}
+/* While its build runs, the picked chip is empty: the technology left it. */
+.sky-hero .chip[data-away='true'] {
+  opacity: 0.35;
+  border-style: dashed;
+  box-shadow: none;
+}
+.sky-hero .chip:disabled:not([data-away='true']) {
+  opacity: 0.55;
+}
+.sky-hero .chip-check {
+  margin-left: 2px;
+  font-family: var(--cir-font-body);
+  font-size: 12px;
+  color: var(--sky-cyan);
+}
+.sky-hero .chip[data-landed='true'] {
+  border-color: rgba(159, 232, 255, 0.35);
+  color: var(--cir-ash);
+}
+
+/* The chip on its way to the stage. */
+.sky-hero .sky-flyer {
+  position: absolute;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 16px;
+  border: 1px solid var(--tech);
+  border-radius: 999px;
+  background: rgba(10, 14, 22, 0.92);
+  color: #fff;
+  font: 400 14px/1 var(--cir-font-cond);
+  letter-spacing: var(--cir-track);
+  text-transform: uppercase;
+  box-shadow: 0 0 28px -4px var(--tech);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.sky-hero .sky-flyer .chip-dot {
+  width: 6px;
+  height: 6px;
+  rotate: 45deg;
+  background: var(--tech);
+}
+
+/* ── The stage ───────────────────────────────────────────────────────────── */
+
+.sky-hero .stage-anchor {
+  position: absolute;
+  left: var(--free-cx);
+  top: var(--stage-y);
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* The headline steps aside while the stage is in use (desktop only; below
+   1080px the stage sits under the picker instead). */
+@media (min-width: 1081px) {
+  .sky-hero .hero-copy[data-dim='true'] {
+    opacity: 0;
+    transform: translateY(-10px);
+    visibility: hidden;
+    transition: opacity 0.45s var(--ease), transform 0.45s var(--ease), visibility 0s linear 0.45s;
+  }
+}
+
+/* What is happening, in words: technology, beat, and where in the run. */
+.sky-hero .sky-status {
+  position: absolute;
+  left: var(--free-cx);
+  top: calc(var(--nav-h) + 28px);
+  translate: -50% 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--sky-line);
+  border-radius: 999px;
+  background: rgba(8, 11, 18, 0.72);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+.sky-hero .sky-status[data-on='true'] {
+  opacity: 1;
+}
+.sky-hero .sky-status-tech {
+  font: 400 13px/1 var(--cir-font-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.sky-hero .sky-status-tech::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  rotate: 45deg;
+  background: var(--tech);
+  box-shadow: 0 0 8px var(--tech);
+}
+.sky-hero .sky-status-beat {
+  font: 400 11px/1 var(--cir-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sky-cyan);
+}
+.sky-hero .sky-status-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+.sky-hero .sky-status-dots i {
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background-color 0.3s var(--ease);
+}
+.sky-hero .sky-status-dots i[data-on='true'] {
+  background: var(--sky-cyan);
+}
+
+/* Every slot on the stage. Old .stage-code positioning is reset here. */
+.sky-hero .stage-slot {
+  position: absolute;
+  top: var(--stage-y);
+  bottom: auto;
+  right: auto;
+  translate: 0 -50%;
+  transform: none;
+  animation: none;
+}
+
+/* The code window, then the compile panel, left of the centre... */
+.sky-hero .sky-window {
+  left: calc(var(--free-cx) - 12px - var(--duo-w));
+  width: var(--duo-w);
+  animation: sky-materialize 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  transition: transform 1.3s cubic-bezier(0.6, 0, 0.8, 0.4), opacity 1.3s ease-in, filter 1.3s ease-in;
+}
+/* ...and the thing the code builds, right of it. */
+.sky-hero .sky-art {
+  left: calc(var(--free-cx) + 12px);
+  width: var(--duo-w);
+  height: min(430px, 62vh);
+  animation: sky-materialize 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  transition: transform 1.3s cubic-bezier(0.6, 0, 0.8, 0.4), opacity 1.3s ease-in, filter 1.3s ease-in;
+}
+.sky-hero .sky-build {
+  animation-name: sky-swap;
+  animation-duration: 0.5s;
+}
+
+/* Out of the clouds: blurred and overexposed, then an opening band, then
+   sharp. Only transform, opacity, filter and clip-path move. */
+@keyframes sky-materialize {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(14px) brightness(1.8);
+    clip-path: inset(46% 6% 46% 6% round 14px);
+  }
+  55% {
+    opacity: 1;
+    filter: blur(3px) brightness(1.2);
+    clip-path: inset(0 0 0 0 round 14px);
+  }
+}
+@keyframes sky-swap {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+/* BURST: the panels stay mounted for one frame more so the effects layer can
+   break them into fragments where they stood, then vanish at once. */
+.sky-hero .stage-slot[data-burst='true'] {
+  opacity: 0 !important;
+  transition: opacity 0.12s linear !important;
+}
+
+/* ENERGY_BUILD: code, system and mark are drawn into the centre. */
+.sky-hero .sky-window[data-converge='true'] {
+  transform: translateX(calc(var(--duo-w) / 2 + 12px)) scale(0.5);
+  opacity: 0.45;
+  filter: brightness(1.5) blur(1px);
+}
+.sky-hero .sky-art[data-converge='true'] {
+  transform: translateX(calc(var(--duo-w) / -2 - 12px)) scale(0.5);
+  opacity: 0.45;
+  filter: brightness(1.5) blur(1px);
+}
+
+/* ── The code window ─────────────────────────────────────────────────────── */
+
+.sky-hero .sky-window .cp {
+  transform: none;
+  border: 1px solid var(--sky-line);
+  border-radius: 14px;
+  background: var(--sky-panel);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 30px 80px -24px rgba(0, 0, 0, 0.8),
+    0 0 60px -24px rgba(159, 232, 255, 0.55);
+}
+.sky-hero .sky-window .cp-bar {
+  padding: 11px 14px;
+  border-bottom-color: rgba(159, 232, 255, 0.12);
+}
+.sky-hero .sky-window .cp-dot:nth-child(1) { background: #ff5f57; opacity: 0.85; }
+.sky-hero .sky-window .cp-dot:nth-child(2) { background: #febc2e; opacity: 0.85; }
+.sky-hero .sky-window .cp-dot:nth-child(3) { background: #28c840; opacity: 0.85; }
+.sky-hero .sky-window .cp-name {
+  color: #e6f6ff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+/* Real highlighting here: the point is to read what the code does. */
+.sky-hero .sky-window .cp-body {
+  filter: none;
+  max-height: calc(min(430px, 62vh) - 44px);
+  font-size: 12px;
+  line-height: 1.62;
+  padding: 12px 14px 14px 0;
+  overflow: hidden;
+}
+.sky-hero .sky-window .cp--numbered code {
+  counter-reset: ln;
+}
+.sky-hero .sky-window .cp--numbered .cp-line {
+  counter-increment: ln;
+  position: relative;
+  padding-left: 3.4em;
+  min-height: 1.62em;
+  transition: background-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.sky-hero .sky-window .cp--numbered .cp-line::before {
+  content: counter(ln);
+  position: absolute;
+  left: 0;
+  width: 2.4em;
+  text-align: right;
+  color: rgba(206, 216, 230, 0.3);
+}
+/* The lines that built the part of the system being built right now. */
+.sky-hero .sky-window .cp-line[data-hl='true'] {
+  background: linear-gradient(90deg, rgba(159, 232, 255, 0.16), rgba(159, 232, 255, 0.02) 80%);
+  box-shadow: inset 2px 0 0 var(--sky-cyan);
+}
+
+/* ── The compile panel ───────────────────────────────────────────────────── */
+
+.sky-hero .cmp {
+  --p: 0;
+  padding: 22px 24px 20px;
+  border: 1px solid var(--sky-line);
+  border-radius: 14px;
+  background: var(--sky-panel);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 30px 80px -24px rgba(0, 0, 0, 0.8),
+    0 0 60px -24px rgba(159, 232, 255, 0.55);
+}
+.sky-hero .cmp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.sky-hero .cmp-spin {
+  width: 8px;
+  height: 8px;
+  rotate: 45deg;
+  background: var(--sky-cyan);
+  box-shadow: 0 0 10px var(--sky-cyan);
+  animation: cmp-pulse 1s ease-in-out infinite;
+}
+.sky-hero .cmp[data-done='true'] .cmp-spin {
+  animation: none;
+  background: #7ee2b8;
+  box-shadow: 0 0 12px #7ee2b8;
+}
+@keyframes cmp-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.sky-hero .cmp-title {
+  margin: 0;
+  font: 400 20px/1.1 var(--cir-font-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+.sky-hero .cmp-steps {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: grid;
+  gap: 11px;
+}
+.sky-hero .cmp-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: 400 14px/1.3 var(--cir-font-body);
+  color: #e8eef6;
+  transition: opacity 0.3s var(--ease), color 0.3s var(--ease);
+}
+.sky-hero .cmp-step[data-state='wait'] {
+  opacity: 0.32;
+}
+.sky-hero .cmp-tick {
+  display: grid;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.3s var(--ease);
+}
+.sky-hero .cmp-step[data-state='run'] .cmp-tick {
+  color: var(--sky-cyan);
+  animation: cmp-pulse 0.8s ease-in-out infinite;
+}
+.sky-hero .cmp-step[data-state='done'] .cmp-tick {
+  color: #7ee2b8;
+}
+.sky-hero .cmp-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.sky-hero .cmp-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3aa9d8, var(--sky-cyan), #fff);
+  box-shadow: 0 0 12px rgba(159, 232, 255, 0.8);
+  transform: scaleX(var(--p));
+  transform-origin: left;
+}
+.sky-hero .cmp-pct {
+  margin: 8px 0 0;
+  text-align: right;
+  font: 400 12px/1 var(--cir-font-mono);
+  color: var(--sky-cyan);
+}
+
+/* ── Expertise and the final summary ─────────────────────────────────────── */
+
+.sky-hero .stage-xp {
+  left: calc((100% - var(--shell)) / 2);
+  width: min(780px, calc(var(--free-w) - 24px));
+  animation: xp-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes xp-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    filter: blur(8px);
+  }
+}
+
+.sky-hero .xp {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 28px;
+  padding: 30px 32px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(14, 18, 28, 0.9), rgba(8, 10, 16, 0.88));
+  box-shadow: 0 40px 90px -40px rgba(10, 20, 40, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+.sky-hero .xp-final {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sky-hero .xp-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.sky-hero .xp-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font: 400 12px/1 var(--cir-font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sky-cyan);
+}
+.sky-hero .xp-count {
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  font: 400 11px/1 var(--cir-font-mono);
+  color: var(--cir-ash);
+}
+.sky-hero .tech-logo {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  background: var(--c);
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
+}
+.sky-hero .xp-head {
+  margin: 0 0 14px;
+  font: 400 30px/1.08 var(--cir-font-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: #fff;
+  outline: none;
+}
+.sky-hero .xp-hi {
+  display: block;
+  background: var(--sky-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sky-hero .xp-text {
+  margin: 0 0 18px;
+  max-width: 58ch;
+  font: 400 15px/1.6 var(--cir-font-body);
+  color: var(--cir-ash);
+}
+.sky-hero .xp-caps {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 20px;
+}
+.sky-hero .xp-caps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 400 14px/1.35 var(--cir-font-body);
+  color: #eef3f8;
+}
+.sky-hero .xp-tick {
+  flex: none;
+  color: #7ee2b8;
+}
+.sky-hero .xp-evidence {
+  margin: 0 0 22px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--sky-amber);
+  background: rgba(242, 179, 107, 0.07);
+  font: 400 14px/1.5 var(--cir-font-body);
+  color: #e6e9ee;
+}
+.sky-hero .xp-evidence-k {
+  display: block;
+  margin-bottom: 4px;
+  font: 400 11px/1 var(--cir-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sky-amber);
+}
+.sky-hero .xp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+.sky-hero .xp-btn {
+  gap: 10px;
+}
+.sky-hero .xp .btn-primary {
+  border-color: var(--sky-cyan);
+  color: #fff;
+}
+.sky-hero .xp .btn-primary:hover {
+  border-color: #fff;
+  color: #fff;
+  box-shadow: 0 0 22px -6px var(--sky-cyan);
+}
+.sky-hero .xp-emblem {
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 28px;
+  border: 1px solid color-mix(in srgb, var(--tech) 45%, transparent);
+  background:
+    radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--tech) 30%, transparent), transparent 70%),
+    linear-gradient(160deg, rgba(20, 26, 40, 0.95), rgba(8, 10, 16, 0.95));
+  box-shadow: 0 0 50px -12px var(--tech), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transform: perspective(600px) rotateY(-14deg) rotateX(6deg);
+  animation: xp-float 6s ease-in-out infinite;
+}
+.sky-hero .xp-emblem-logo {
+  width: 70px;
+  height: 70px;
+  filter: drop-shadow(0 0 12px var(--tech));
+}
+@keyframes xp-float {
+  50% {
+    transform: perspective(600px) rotateY(-8deg) rotateX(2deg) translateY(-6px);
+  }
+}
+.sky-hero .xp-areas {
+  margin: 4px 0 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 22px;
+}
+.sky-hero .xp-areas div {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.sky-hero .xp-areas dt {
+  font: 400 14px/1.2 var(--cir-font-cond);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sky-hot);
+  margin-bottom: 6px;
+}
+.sky-hero .xp-areas dd {
+  margin: 0;
+  font: 400 13px/1.45 var(--cir-font-body);
+  color: var(--cir-ash);
+}
+
+/* ── Below the two-column layout: the stage sits under the picker ───────── */
+
+@media (max-width: 1080px) {
+  .sky-hero {
+    display: block;
+    min-height: auto;
+    --duo-w: 100%;
+  }
+  .sky-hero .hero-grid {
+    padding-bottom: 36px;
+  }
+  .sky-hero .scroll-cue {
+    display: none;
+  }
+  .sky-hero .stage {
+    position: relative;
+    inset: auto;
+    width: var(--shell);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: start;
+    scroll-margin-top: calc(var(--nav-h) + 12px);
+  }
+  .sky-hero[data-stage='true'] .stage {
+    min-height: 480px;
+    padding-bottom: 40px;
+  }
+  .sky-hero .stage-anchor {
+    left: 50%;
+    top: 50%;
+  }
+  .sky-hero .sky-status {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    grid-column: 1 / -1;
+    justify-self: center;
+    display: none;
+  }
+  .sky-hero .sky-status[data-on='true'] {
+    display: flex;
+  }
+  .sky-hero .stage-slot {
+    position: relative;
+    left: auto;
+    top: auto;
+    translate: none;
+    width: 100%;
+  }
+  .sky-hero .sky-art {
+    height: 400px;
+  }
+  .sky-hero .stage-xp {
+    grid-column: 1 / -1;
+  }
+  .sky-hero .sky-window[data-converge='true'],
+  .sky-hero .sky-art[data-converge='true'] {
+    transform: scale(0.6);
+  }
+}
+
+@media (max-width: 767px) {
+  .sky-hero .stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sky-hero .sky-art {
+    height: 360px;
+  }
+  .sky-hero .sky-window .cp-body {
+    max-height: 300px;
+    font-size: 11px;
+  }
+  .sky-hero .sky-status {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .sky-hero .sky-status-dots {
+    display: none;
+  }
+  .sky-hero .xp {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 22px 20px;
+  }
+  .sky-hero .xp-emblem {
+    display: none;
+  }
+  .sky-hero .xp-head {
+    font-size: 24px;
+  }
+  .sky-hero .xp-caps,
+  .sky-hero .xp-areas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1080px) {
+  .sky-hero .xp-areas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── Reduced motion: fades stay, travel goes ─────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-hero .sky-window,
+  .sky-hero .sky-art,
+  .sky-hero .stage-xp {
+    animation: none !important;
+    opacity: 1;
+    filter: none;
+    clip-path: none;
+  }
+  .sky-hero .sky-window[data-converge='true'],
+  .sky-hero .sky-art[data-converge='true'] {
+    transform: none;
+    opacity: 0.6;
+  }
+  .sky-hero .xp-emblem {
+    animation: none;
+  }
+}
+
+/* ── Once the sky is white: light glass for the selector and the panels ─── */
+/* The run's own windows (code, build, scene) stay dark: they are the work,
+   lit against the sky. What the visitor reads and acts on afterwards turns
+   to frosted white with dark ink, as calm as the sky behind it. */
+
+.sky-hero[data-sky='clear'] .picker {
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(14, 17, 22, 0.08);
+  box-shadow: 0 30px 70px -34px rgba(30, 50, 80, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.sky-hero[data-sky='clear'] .picker-title {
+  color: #0e1116;
+}
+.sky-hero[data-sky='clear'] .picker-count,
+.sky-hero[data-sky='clear'] .picker .linkish {
+  color: #3b4450;
+}
+.sky-hero[data-sky='clear'] .picker-foot {
+  border-top-color: rgba(14, 17, 22, 0.12);
+}
+.sky-hero[data-sky='clear'] .chip {
+  color: #1d232b;
+  border-color: rgba(14, 17, 22, 0.22);
+  background: rgba(255, 255, 255, 0.5);
+}
+.sky-hero[data-sky='clear'] .chip:hover:not([disabled]) {
+  color: #000;
+  border-color: var(--tech);
+  box-shadow: 0 0 16px -6px var(--tech);
+}
+.sky-hero[data-sky='clear'] .chip[data-landed='true'] {
+  color: #0e1116;
+  border-color: rgba(26, 154, 106, 0.55);
+  background: rgba(126, 226, 184, 0.2);
+}
+.sky-hero[data-sky='clear'] .chip-check {
+  color: #1a9a6a;
+}
+.sky-hero[data-sky='clear'] .chip[data-active='true'] {
+  color: #000;
+}
+
+.sky-hero[data-sky='clear'] .xp {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(14, 17, 22, 0.08);
+  box-shadow: 0 40px 90px -40px rgba(30, 50, 80, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #0e1116;
+}
+.sky-hero[data-sky='clear'] .xp-kicker {
+  color: #1f5f86;
+}
+.sky-hero[data-sky='clear'] .xp-count {
+  color: #3b4450;
+  border-color: rgba(14, 17, 22, 0.18);
+}
+.sky-hero[data-sky='clear'] .xp-head {
+  color: #0f1b2d;
+}
+.sky-hero[data-sky='clear'] .xp-hi {
+  background: linear-gradient(100deg, #e08a2e, #b4561a);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.sky-hero[data-sky='clear'] .xp-text,
+.sky-hero[data-sky='clear'] .xp-areas dd {
+  color: #3b4450;
+}
+.sky-hero[data-sky='clear'] .xp-caps li {
+  color: #1d232b;
+}
+.sky-hero[data-sky='clear'] .xp-tick {
+  color: #1a9a6a;
+}
+.sky-hero[data-sky='clear'] .xp-evidence {
+  background: rgba(242, 179, 107, 0.16);
+  color: #2b323c;
+}
+.sky-hero[data-sky='clear'] .xp-evidence-k,
+.sky-hero[data-sky='clear'] .xp-areas dt {
+  color: #a4581c;
+}
+.sky-hero[data-sky='clear'] .xp-areas div {
+  border-top-color: rgba(14, 17, 22, 0.12);
+}
+.sky-hero[data-sky='clear'] .xp .btn-primary {
+  background: #0f1b2d;
+  border-color: #0f1b2d;
+  color: #fff;
+}
+.sky-hero[data-sky='clear'] .xp .btn-primary:hover {
+  background: #1d3350;
+  border-color: #1d3350;
+  color: #fff;
+  box-shadow: 0 10px 26px -12px rgba(15, 27, 45, 0.8);
+}
+.sky-hero[data-sky='clear'] .xp .btn-ghost {
+  border-color: #0f1b2d;
+  color: #0f1b2d;
+}
+.sky-hero[data-sky='clear'] .xp .btn-ghost:hover {
+  border-color: var(--cir-ember);
+  color: var(--cir-ember);
+}
+.sky-hero[data-sky='clear'] .xp .linkish {
+  color: #2b323c;
+}
+
+/* Marks drawn in white (Next.js) need ink on the white glass. */
+.sky-hero[data-sky='clear'] .chip-dot {
+  border-color: color-mix(in srgb, var(--tech) 70%, #0e1116);
+}
+.sky-hero[data-sky='clear'] .xp-kicker .tech-logo {
+  background: color-mix(in srgb, var(--c) 70%, #0e1116);
+}

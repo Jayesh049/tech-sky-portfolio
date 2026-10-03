@@ -1,0 +1,588 @@
+/* ===========================================================================
+   THE MASTHEAD SEQUENCE
+   Quiet → Expansion → Return → Rotation → Acceleration → Burst → Four paths → Exploration
+
+   Layout, atmosphere and the four sections for HeroVideo.jsx. Selectors are
+   anchored on .sq-hero so they outrank the kit and theme rules they adjust
+   whatever order the stylesheets load in.
+
+   THE MOTION INVARIANT (see theme-ciridae.css) holds here too: the default is
+   the FINAL state — dark, starlit, four sections standing, the name kept for
+   screen readers. The quiet state is applied only under [data-seq="pending"]
+   and [data-seq="running"], which useHeroSequence sets only when motion is
+   allowed.
+
+   One deliberate break from the system's "nothing glows, nothing casts a
+   shadow": the sections carry the storyboard's light — luminous edges,
+   corner glints, lit seams. It is confined to this block.
+   =========================================================================== */
+
+/* ── Layout: the mark at the hero's exact centre ─────────────────────────────
+   The row is a column of three: an empty spacer, the triad (flank · mark ·
+   flank) and the copy. Spacer and copy share the leftover height equally, so
+   the mark sits on the centre line — the horizon the sections later stand on. */
+
+.sq-hero {
+  min-height: 100svh;
+}
+
+.sq-hero > .sq-hero__row {
+  position: relative;
+  z-index: 1;
+  align-self: stretch;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  width: var(--cir-shell);
+  padding: clamp(16px, 3svh, 32px) 0;
+}
+
+.sq-hero .sq-hero__above {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.sq-hero .sq-hero__triad {
+  position: relative; /* the sections are centred on it: on the horizon */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.sq-hero .sq-hero__below {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Spacing lives inside, not on the flex item: padding on a zero-basis item
+   would tip the balance and lift the mark off the centre line. */
+.sq-hero .sq-hero__below > .sq-hero__text {
+  margin-top: 18px;
+}
+
+/* The mark's box never changes, so nothing around it moves while the canvas
+   owns it. The engine hides the SVG with inline opacity. */
+.sq-hero .cir-mark-stage {
+  display: block;
+  width: 76px;
+  height: 76px;
+  line-height: 0;
+}
+
+/* The flanks still converge inward on the entrance; the reveal now lives on
+   the row itself. */
+.sq-hero__row[data-reveal]:not(.in) .cir-flank--l { opacity: 0; translate: calc(var(--cir-lift) * -1) 0; }
+.sq-hero__row[data-reveal]:not(.in) .cir-flank--r { opacity: 0; translate: var(--cir-lift) 0; }
+
+/* The toggle slot only ever holds a screen-reader button; take it out of the
+   flow so it can't nudge the centre line. */
+.sq-hero .sq-hero__toggle-slot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+/* Final state: the sections have taken the stage. The mark and flanks are
+   gone; the copy stays in the accessibility tree (the section is labelled by
+   the h1) but out of sight. */
+.sq-hero[data-seq="done"] .cir-mark-stage,
+.sq-hero[data-seq="done"] .cir-flank {
+  visibility: hidden;
+}
+.sq-hero[data-seq="done"] .sq-hero__text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Atmosphere ──────────────────────────────────────────────────────────────
+   Dusk and star dust sit over the video (which keeps playing) and under
+   everything else. The light canvas sits over everything, so the skyshot
+   washes across the name as it does in the storyboard. */
+
+.sq-hero__dusk,
+.sq-hero__stars,
+.sq-hero__fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* A flat dim plus a vignette that closes in. At full strength the video
+   still reads through the centre, as in frames 11–12. */
+.sq-hero__dusk {
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 66% 60% at 50% 50%, rgb(5 5 5 / 0) 0%, rgb(5 5 5 / 0.45) 62%, rgb(5 5 5 / 0.9) 100%),
+    linear-gradient(rgb(5 5 5 / 0.46), rgb(5 5 5 / 0.46));
+}
+.sq-hero__stars { z-index: -1; }
+.sq-hero__fx { z-index: 2; }
+
+.sq-hero:is([data-seq="pending"], [data-seq="running"]) .sq-hero__dusk,
+.sq-hero:is([data-seq="pending"], [data-seq="running"]) .sq-hero__stars {
+  opacity: 0;
+}
+
+/* ── Exploration: the four sections ──────────────────────────────────────────
+   Centred on the triad — the horizon line through the mark — so each stands
+   up out of the exact point where its node landed. Tall, dark glass,
+   luminous edges, star glints at the corners, lit seams, a floor of light;
+   the outer pair angled in like the wings of a folding screen. */
+
+.cir-paths {
+  --gap: clamp(14px, 2vw, 30px);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: min(1180px, 100%);
+  height: clamp(300px, 60svh, 580px);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap);
+  perspective: 1200px;
+}
+
+.cir-path {
+  --tilt: 0deg;
+  --edge: rgb(255 255 255 / 0.9);
+  position: relative;
+  display: grid;
+  /* WAS: align-content: center; justify-items: center; with no explicit rows --
+     correct when a panel held an icon, a title and one line of subtitle and the
+     job was to centre that small block in a tall box. The panels measured
+     292x581 carrying ~172px, so roughly 400px of each was empty. Now the rows
+     are named: numeral at the top, the drawing takes the slack, and the text
+     block sits in the lower half the way the reference render has it. */
+  /* align-content: center; */
+  /* justify-items: center; */
+  align-content: start;
+  justify-items: start;
+  grid-template-rows: auto 1fr auto auto auto auto;
+  gap: 10px;
+  padding: 24px 18px;
+  border-radius: var(--cir-r-md);
+  background:
+    radial-gradient(120% 55% at 50% 0%, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0) 62%),
+    radial-gradient(90% 40% at 50% 100%, rgb(255 236 220 / 0.06), rgb(255 255 255 / 0) 70%),
+    linear-gradient(180deg, rgb(30 30 30 / 0.55), rgb(8 8 8 / 0.8));
+  /* Layered light: a crisp line, a close halo, a warm far glow, and a faint
+     inner rim so the glass reads as having thickness. */
+  box-shadow:
+    0 0 0 1px var(--edge),
+    0 0 4px rgb(255 255 255 / 0.55),
+    0 0 18px rgb(255 250 242 / 0.3),
+    0 0 64px rgb(255 232 210 / 0.14),
+    inset 0 0 0 1px rgb(255 255 255 / 0.1),
+    inset 0 0 46px rgb(255 255 255 / 0.07);
+  -webkit-box-reflect: below 14px linear-gradient(rgb(0 0 0 / 0) 74%, rgb(255 255 255 / 0.1));
+  color: var(--cir-white);
+  /* text-align: center; */ /* centred suited two short lines; a three-item list reads as a list only when it is flush left */
+  text-align: left;
+  text-decoration: none;
+  transform: rotateY(var(--tilt));
+  transform-origin: 50% 50%;
+  /* Negative insets let the glow breathe outside the panel once it's open. */
+  clip-path: inset(-60px -60px -60px -60px);
+  transition:
+    clip-path 820ms var(--cir-ease-mech),
+    transform var(--cir-d-state) var(--cir-ease),
+    box-shadow var(--cir-d-state) var(--cir-ease);
+}
+.cir-path:nth-of-type(1) { --tilt: 20deg; }
+.cir-path:nth-of-type(2) { --tilt: 6deg; }
+.cir-path:nth-of-type(3) { --tilt: -6deg; }
+.cir-path:nth-of-type(4) { --tilt: -20deg; }
+
+/* Corner glints: four points of light where the edges meet. */
+.cir-path__edge {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 0 0, rgb(255 255 255 / 0.95), rgb(255 255 255 / 0) 16px),
+    radial-gradient(circle at 100% 0, rgb(255 255 255 / 0.95), rgb(255 255 255 / 0) 16px),
+    radial-gradient(circle at 0 100%, rgb(255 240 228 / 0.8), rgb(255 255 255 / 0) 14px),
+    radial-gradient(circle at 100% 100%, rgb(255 240 228 / 0.8), rgb(255 255 255 / 0) 14px);
+}
+
+/* The system's one accent, spent once per section: an ember hairline that
+   draws along the foot of the one you're pointing at. */
+.cir-path::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 16px;
+  height: 1px;
+  background: var(--cir-ember);
+  transform: scaleX(0);
+  transition: transform var(--cir-d-enter) var(--cir-ease-mech);
+}
+
+/* The 30px glyph and the large drawing are the same idea at two sizes, so only
+   one of them is ever on screen: the drawing above 900px where there is room
+   for it, this glyph below, where the 2x2 grid leaves each panel too narrow.
+   Shown again in the 900px block at the foot of this file. */
+.cir-path__icon {
+  display: none;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 6px;
+  color: var(--cir-white);
+}
+
+/* The one new ember element per panel. hero-sequence.css has a standing rule a
+   few lines up -- one accent, spent once per section -- so the numeral takes it
+   and the corner glints, the tick glyphs and the arrow ring all stay in the
+   white/bone register. Four numerals on one screen is already the outer edge of
+   "sparingly"; putting ember on the arrow too would spend it twelve times.
+   11px mono uppercase is the newsbar's voice: this is machine data, not brand. */
+.cir-path__no {
+  font-family: var(--cir-font-mono);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  color: var(--cir-ember);
+}
+
+/* justify-self overrides the panel's justify-items:start so the drawing spans
+   the full measure; align-self centres it in the 1fr row it was given. The
+   max-height stops a short panel (1280x800 leaves ~330px of slack, not ~400px)
+   from stretching it out of proportion. */
+.cir-path__art {
+  justify-self: stretch;
+  align-self: center;
+  width: 100%;
+  height: auto;
+  max-height: 190px;
+  color: var(--cir-bone);
+  opacity: 0.55;
+}
+
+.cir-path__list {
+  display: grid;
+  gap: 7px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  font-family: var(--cir-font-body);
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--cir-ash);
+}
+/* flex-start rather than centre: "Roles and responsibilities" wraps to two
+   lines in a 292px panel -- 274px of apparent width on the outer pair, which
+   are rotated 20deg -- and the tick must stay level with the FIRST line. */
+.cir-path__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.cir-path__list svg {
+  flex: none;
+  margin-top: 4px;
+  color: var(--cir-bone);
+  opacity: 0.6;
+}
+
+.cir-path__go {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-top: 4px;
+  border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / 0.35);
+  color: var(--cir-bone);
+  transition:
+    border-color var(--cir-d-state) var(--cir-ease),
+    translate var(--cir-d-state) var(--cir-ease);
+}
+/* Not a touch target: it is aria-hidden and unfocusable, and the 44px gate in
+   scripts/selftest.mjs measures .cir-path itself, which is 581px tall. */
+.cir-path:hover .cir-path__go {
+  border-color: rgb(255 255 255 / 0.8);
+  translate: 4px 0;
+}
+.cir-path__title {
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  font-size: var(--cir-t-h);
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+}
+.cir-path__sub {
+  font-family: var(--cir-font-body);
+  font-size: var(--cir-t-body);
+  line-height: 1.4;
+  letter-spacing: var(--cir-track-body);
+  color: var(--cir-ash);
+  max-width: 14ch;
+}
+.cir-path > :not(.cir-path__edge) {
+  transition:
+    opacity 480ms var(--cir-ease) 260ms,
+    translate 560ms var(--cir-ease) 260ms;
+}
+
+.cir-path:hover {
+  --edge: rgb(255 255 255 / 1);
+  transform: rotateY(var(--tilt)) translateY(-4px);
+  box-shadow:
+    0 0 0 1px var(--edge),
+    0 0 6px rgb(255 255 255 / 0.75),
+    0 0 26px rgb(255 250 242 / 0.4),
+    0 0 84px rgb(255 232 210 / 0.2),
+    inset 0 0 0 1px rgb(255 255 255 / 0.16),
+    inset 0 0 56px rgb(255 255 255 / 0.1);
+}
+.cir-path:hover::after { transform: scaleX(1); }
+.cir-path:focus-visible {
+  outline: 1px solid var(--cir-bone);
+  outline-offset: 6px;
+}
+
+/* Light in the seams: thin columns in the gaps, taller than the sections,
+   the centre one brightest and crowned with a flare. */
+.cir-paths__beam {
+  position: absolute;
+  top: -9%;
+  bottom: -9%;
+  left: calc(var(--b) * 25% + (var(--b) - 2) * var(--gap) / 4);
+  width: 1px;
+  translate: -0.5px 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.5) 18%, rgb(255 255 255 / 0.5) 82%, rgb(255 255 255 / 0));
+  box-shadow: 0 0 8px rgb(255 255 255 / 0.3);
+  transition: opacity 700ms var(--cir-ease);
+}
+.cir-paths__beam--c {
+  top: -18%;
+  bottom: -12%;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.85) 14%, rgb(255 255 255 / 0.6) 80%, rgb(255 255 255 / 0));
+  box-shadow: 0 0 10px rgb(255 255 255 / 0.45), 0 0 26px rgb(255 236 220 / 0.2);
+}
+.cir-paths__flare {
+  position: absolute;
+  left: 50%;
+  top: -10%;
+  width: 220px;
+  height: 96px;
+  translate: -50% -50%;
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.9), rgb(255 255 255 / 0)) center / 100% 1px no-repeat,
+    linear-gradient(180deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.95), rgb(255 255 255 / 0)) center / 1px 100% no-repeat,
+    radial-gradient(circle, rgb(255 255 255 / 1) 0 2px, rgb(255 244 232 / 0.45) 7px, rgb(255 255 255 / 0) 40px);
+  transition: opacity 700ms var(--cir-ease), scale var(--cir-d-state) var(--cir-ease);
+
+  /* It is a <button> now (the replay control). Strip the UA box: the gradients
+     above are its entire appearance. `font: inherit` keeps any future visible
+     label off the UA's 13.33px Arial and inside the type ceiling. `scale` is
+     safe beside `translate` because this file uses the independent transform
+     properties throughout. */
+  padding: 0;
+  border: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* While there is nothing to replay it goes back to being pure decoration:
+   `pointer-events: none` was its permanent state before it became a control. */
+.cir-paths__flare[disabled] {
+  pointer-events: none;
+  cursor: default;
+}
+
+.cir-paths__flare:not([disabled]):hover,
+.cir-paths__flare:not([disabled]):focus-visible {
+  scale: 1.06;
+}
+
+/* The peel handle's pattern: inset, so the ring reads inside the flare's own
+   glow instead of fighting it. */
+.cir-paths__flare:focus-visible {
+  outline: 1px solid var(--cir-bone);
+  outline-offset: -10px;
+  border-radius: var(--cir-r-sm);
+}
+
+
+/* Star glints at the top corners: the mark's own four-point geometry, as
+   light, breathing slowly out of step with each other. */
+.cir-path__edge::before,
+.cir-path__edge::after {
+  content: "";
+  position: absolute;
+  top: -24px;
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.95), rgb(255 255 255 / 0)) center / 100% 1px no-repeat,
+    linear-gradient(180deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.95), rgb(255 255 255 / 0)) center / 1px 100% no-repeat,
+    radial-gradient(circle, rgb(255 255 255 / 1) 0 1.5px, rgb(255 244 232 / 0.4) 3px, rgb(255 255 255 / 0) 13px);
+  animation: cir-twinkle 3.8s ease-in-out infinite;
+}
+.cir-path__edge::before { left: -24px; animation-delay: calc(var(--i, 0) * -0.95s); }
+.cir-path__edge::after { right: -24px; animation-delay: calc(var(--i, 0) * -0.95s - 1.9s); }
+@keyframes cir-twinkle {
+  0%, 100% { opacity: 0.5; scale: 0.78; }
+  50% { opacity: 1; scale: 1.1; }
+}
+
+/* The floor: a line of light at their feet and a low warm haze above it. */
+.cir-paths__floor {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  bottom: -3.5%;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.5) 18%, rgb(255 250 242 / 0.85) 50%, rgb(255 255 255 / 0.5) 82%, rgb(255 255 255 / 0));
+  box-shadow: 0 0 10px rgb(255 244 232 / 0.35);
+  transition: opacity 900ms var(--cir-ease);
+}
+.cir-paths__floor::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: -46px;
+  height: 92px;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgb(255 236 220 / 0.12), rgb(255 255 255 / 0) 72%);
+}
+
+/* Motes: the burst's last light, still drifting. Transform and opacity only. */
+.cir-paths__motes {
+  position: absolute;
+  inset: -14% -5%;
+  pointer-events: none;
+  transition: opacity 1200ms var(--cir-ease);
+}
+.cir-paths__motes i {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgb(255 244 232 / 0.85);
+  opacity: 0;
+  animation: cir-mote var(--d) linear var(--dl) infinite;
+}
+@keyframes cir-mote {
+  0% { opacity: 0; translate: 0 12px; }
+  20% { opacity: 0.9; }
+  75% { opacity: 0.55; }
+  100% { opacity: 0; translate: 8px -40px; }
+}
+
+/* ── Closed: before its node has landed ──────────────────────────────────────
+   Only ever while the sequence is pending or running. A section stands up
+   out of the horizon: clipped to a line through its middle, then opened. */
+.sq-hero:is([data-seq="pending"], [data-seq="running"]) .cir-path:not([data-open="true"]) {
+  visibility: hidden;
+  clip-path: inset(50% -60px 50% -60px);
+}
+.sq-hero:is([data-seq="pending"], [data-seq="running"]) .cir-path:not([data-open="true"]) > :not(.cir-path__edge) {
+  opacity: 0;
+  translate: 0 8px;
+}
+.sq-hero:is([data-seq="pending"], [data-seq="running"]) .cir-paths:not([data-lit="true"]) :is(.cir-paths__beam, .cir-paths__flare, .cir-paths__floor, .cir-paths__motes) {
+  opacity: 0;
+}
+
+/* ── Narrow screens ──────────────────────────────────────────────────────── */
+
+/* No intermediate breakpoint between here and 900px, and that is deliberate.
+   The panel is a grid whose art row is 1fr, so the drawing absorbs every
+   squeeze and the fixed rows -- numeral, title, subtitle, list, arrow, gaps,
+   padding -- total about 310px against a smallest-ever box of 396px. The
+   content cannot overflow. Verified at 14 viewports from 1920x1080 down to
+   901x660: zero overflow at every one, with or without extra breakpoints. */
+
+@media (max-width: 900px) {
+  .sq-hero .sq-hero__triad {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .cir-paths {
+    height: min(74svh, 640px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    perspective: none;
+  }
+  .cir-path {
+    --tilt: 0deg !important;
+    padding: 16px 12px;
+    gap: 8px;
+    /* Back to the centred block this breakpoint has always used. The 2x2 grid
+       makes each panel ~430px wide at 900px and ~170px at 375px, and a
+       three-item list at 170px wraps every row to three lines and pushes
+       straight out of the panel. So the drawing, the list and the arrow are
+       desktop-only, and the phone keeps the exact card it has today -- numeral,
+       glyph, title, subtitle -- which already clears the 44px and overflow
+       gates. This is the one place the panels do not match the render, and the
+       reason is width, not taste. */
+    align-content: center;
+    justify-items: center;
+    grid-template-rows: none;
+    text-align: center;
+  }
+  .cir-path__art,
+  .cir-path__list,
+  .cir-path__go { display: none; }
+  .cir-path__icon { display: block; }
+  .cir-path__title { font-size: var(--cir-t-h-sm); }
+  .cir-path__sub { font-size: var(--cir-t-sm); }
+  .cir-paths__beam:not(.cir-paths__beam--c) { display: none; }
+  /* Two rows: a reflection would fall across the row below. */
+  .cir-path { -webkit-box-reflect: unset; }
+  .cir-paths__floor { bottom: -2%; }
+}
+
+/* POST-MERGE FIX. The peel handle owns the stage's bottom-right corner (96px
+   tall at this breakpoint). On short phones the centred paths grid grows down
+   into it -- measured a 9px overlap at 375x667 -- so a tap meant for the
+   bottom-right panel starts a peel drag instead. The grid is centred, so it
+   has to lose twice the overlap to clear. Taller phones keep the full size. */
+@media (max-width: 900px) and (max-height: 740px) {
+  .cir-paths { height: min(64svh, 560px); }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+/* The hook never starts the sequence under reduced motion. If the preference
+   flips mid-run, the light goes and the hero snaps to its final state. */
+@media (prefers-reduced-motion: reduce) {
+  .sq-hero__fx { display: none; }
+  .sq-hero .sq-hero__dusk,
+  .sq-hero .sq-hero__stars { opacity: 1 !important; }
+  .sq-hero .cir-path { visibility: visible !important; clip-path: none !important; transform: none; }
+  .sq-hero .cir-path > :not(.cir-path__edge) { opacity: 1 !important; translate: none !important; }
+  .sq-hero .cir-paths :is(.cir-paths__beam, .cir-paths__flare, .cir-paths__floor, .cir-paths__motes) { opacity: 1 !important; }
+  .cir-path__edge::before,
+  .cir-path__edge::after { animation: none; opacity: 0.8; }
+  .cir-paths__motes i { animation: none; opacity: 0.45; }
+}

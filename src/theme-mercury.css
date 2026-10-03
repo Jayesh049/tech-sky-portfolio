@@ -1,0 +1,577 @@
+/* ============================================================
+   MERCURY
+   Theme source: Downloads/pf2 ("Mercury — Alpine banking at blue hour"),
+   tokens in src/pf2-mercury-variables.css.
+
+   Scope: Tech Sky's own sections and the 3D sky hero, which now lives in
+   the skills section. The portfolio-next header, hero and footer (sq-*)
+   are deliberately left exactly as built.
+
+   Collision rule: pf2 and the portfolio-next kit share generic token names
+   (--text-*, --radius-*, --spacing-*, --page-max-width, --font-weight-*)
+   with different values. The kit loads after the pf2 tokens, so those
+   names carry the kit's values. This file therefore uses only Mercury's
+   uniquely named colours plus literal sizes, and never targets sq-*.
+
+   Loaded last from src/main.jsx. Comment that import out to remove it.
+   ============================================================ */
+
+/* ---------- Tech Sky tokens pointed at Mercury ---------- */
+
+:root {
+  --ink-0: var(--color-onyx-canvas);
+  --ink-1: var(--color-onyx-canvas);
+  --ink-2: var(--color-graphite-card);
+  --ink-3: var(--color-obsidian-button);
+
+  --paper: var(--color-ivory-text);
+  --paper-dim: var(--color-ash-text);
+  --paper-mute: var(--color-ash-text);
+
+  /* cobalt is reserved for the single primary action, never decoration */
+  --accent: var(--color-ivory-text);
+  --accent-deep: var(--color-ivory-text);
+
+  --line: rgba(112, 112, 125, 0.35);
+  --line-strong: rgba(112, 112, 125, 0.6);
+
+  --glass: transparent;
+  --glass-hi: transparent;
+
+  --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --shell: min(1200px, 100% - 48px);
+}
+
+/* ---------- canvas and rhythm ---------- */
+
+body {
+  background: var(--color-onyx-canvas);
+  color: var(--color-ivory-text);
+}
+
+a {
+  color: inherit;
+}
+
+.sec-about,
+.sec-stack,
+.sec-work,
+.sec-film,
+.sec-exp,
+.sec-contact {
+  background: var(--color-onyx-canvas);
+  color: var(--color-ivory-text);
+}
+
+.sec {
+  padding: clamp(72px, 9vw, 112px) 0;
+}
+
+.skip {
+  background: var(--color-ivory-text);
+  color: var(--color-onyx-canvas);
+  border-radius: 32px;
+  font: 400 14px/1 var(--font-body);
+}
+
+/* ---------- type: weight 480, wide-set display ---------- */
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 480;
+  font-size: clamp(32px, 3.4vw, 42px);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  max-width: 22ch;
+  margin-bottom: 20px;
+}
+.h2-wide {
+  max-width: 28ch;
+}
+.h2-big {
+  font-size: clamp(42px, 5.4vw, 65px);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  max-width: 16ch;
+}
+
+.lede {
+  color: var(--color-ash-text);
+  font-size: clamp(16px, 1.25vw, 18px);
+  line-height: 1.5;
+}
+
+.srcline {
+  font: 400 12px/1.5 var(--font-mono);
+  color: var(--color-ash-text);
+  letter-spacing: 0.01em;
+  opacity: 0.8;
+}
+.srcline-caret {
+  background: var(--color-ivory-text);
+}
+
+/* ---------- buttons: pills; ivory outline everywhere, cobalt once ---------- */
+
+.btn {
+  border-radius: 32px;
+  font: 400 16px/1 var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 14px 24px;
+  border: 1px solid transparent;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease),
+    border-color 0.2s var(--ease), opacity 0.2s var(--ease);
+}
+.btn:hover {
+  transform: none;
+}
+.btn-primary,
+.btn-ghost,
+.btn:not(.btn-primary):not(.btn-ghost) {
+  background: transparent;
+  color: var(--color-ivory-text);
+  border-color: var(--color-ivory-text);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.btn-primary:hover,
+.btn-ghost:hover,
+.btn:not(.btn-primary):not(.btn-ghost):hover {
+  background: var(--color-obsidian-button);
+  color: var(--color-ivory-text);
+  border-color: var(--color-ivory-text);
+}
+.btn-small {
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 32px;
+}
+.btn-big {
+  font-size: 16px;
+  padding: 16px 32px;
+  border-radius: 32px;
+}
+
+/* The single chromatic action on the page. */
+.sec-contact .btn-primary {
+  background: var(--color-cobalt);
+  color: var(--color-pure-white);
+  border-color: var(--color-cobalt);
+}
+.sec-contact .btn-primary:hover {
+  background: var(--color-cobalt);
+  color: var(--color-pure-white);
+  border-color: var(--color-cobalt);
+  opacity: 0.88;
+}
+
+.linkish {
+  font: 400 14px/1 var(--font-body);
+  letter-spacing: 0.005em;
+  text-transform: none;
+  color: var(--color-ash-text);
+}
+.linkish:hover {
+  color: var(--color-ivory-text);
+  border-bottom-color: var(--color-ivory-text);
+}
+
+/* ---------- graphite cards ---------- */
+
+/* About: facts as cards */
+.facts {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  gap: 12px;
+  overflow: visible;
+}
+.facts li {
+  background: var(--color-graphite-card);
+  border-radius: 12px;
+  padding: 24px 28px;
+  gap: 16px;
+}
+.facts b {
+  font: 480 clamp(28px, 2.6vw, 32px) / 1.15 var(--font-display);
+  color: var(--color-ivory-text);
+  letter-spacing: 0.015em;
+}
+.facts span {
+  font-size: 14px;
+  color: var(--color-ash-text);
+}
+
+/* About: disciplines as a card grid */
+.disciplines {
+  border-top: 0;
+  padding-top: 0;
+  gap: 16px;
+}
+.disc {
+  background: var(--color-graphite-card);
+  border-radius: 12px;
+  padding: 32px;
+}
+.disc-h {
+  font: 480 21px/1.35 var(--font-display);
+  letter-spacing: 0;
+  margin-bottom: 8px;
+}
+.disc-line {
+  font-size: 14px;
+  color: var(--color-ash-text);
+}
+.disc li {
+  color: var(--color-ash-text);
+}
+.disc li::before {
+  background: var(--color-slate-border);
+  opacity: 1;
+}
+
+/* Code panels (3D hero stage and rail) */
+.cp {
+  background: var(--color-graphite-card);
+  border: 0;
+  border-radius: 12px;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.cp-bar {
+  background: transparent;
+  border-bottom: 1px solid rgba(112, 112, 125, 0.25);
+}
+.cp-dot {
+  background: var(--color-obsidian-button);
+}
+.cp-name {
+  color: var(--color-ash-text);
+}
+/* monochrome discipline: syntax hierarchy as tones */
+.cp-body {
+  color: var(--color-ivory-text);
+  filter: grayscale(1) contrast(1.1) brightness(1.08);
+}
+.cp-caret {
+  background: var(--color-ivory-text);
+}
+
+/* ---------- the 3D sky hero, now in the skills section ---------- */
+/* The sky and logos keep their colour; only the chrome follows Mercury. */
+
+.hero-h1 {
+  font-family: var(--font-display);
+  font-weight: 480;
+  font-size: clamp(40px, 5.4vw, 65px);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  max-width: 13ch;
+  color: var(--color-pure-white);
+}
+.hero-sub {
+  color: var(--color-ivory-text);
+  font-size: clamp(16px, 1.25vw, 18px);
+  line-height: 1.5;
+}
+
+.eyebrow {
+  background: var(--color-obsidian-button);
+  border: 0;
+  border-radius: 40px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--color-ivory-text);
+  font: 400 12px/1 var(--font-body);
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+.pip,
+.pip::after {
+  background: var(--color-ivory-text);
+}
+
+.picker {
+  background: rgba(30, 30, 42, 0.92);
+  border: 0;
+  border-radius: 12px;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  padding: 24px;
+}
+.picker-title {
+  font: 400 14px/1.4 var(--font-body);
+  color: var(--color-ivory-text);
+}
+.picker-count {
+  color: var(--color-ash-text);
+}
+.picker-foot {
+  border-top-color: rgba(112, 112, 125, 0.35);
+}
+.hero .linkish {
+  color: var(--color-ash-text);
+}
+
+/* tags and chips: 40px pills on obsidian */
+.chip {
+  font: 400 14px/1 var(--font-body);
+  color: var(--color-ivory-text);
+  background: var(--color-obsidian-button);
+  border: 1px solid transparent;
+  border-radius: 40px;
+  padding: 10px 16px;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease),
+    border-color 0.2s var(--ease);
+}
+.chip-dot {
+  background: var(--color-ash-text);
+  box-shadow: none;
+}
+.chip:hover:not(:disabled) {
+  background: rgba(237, 237, 243, 0.14);
+  border-color: transparent;
+  transform: none;
+}
+.chip:hover:not(:disabled) .chip-dot {
+  background: var(--color-ivory-text);
+  box-shadow: none;
+}
+.chip[data-active='true'] {
+  background: var(--color-ivory-text);
+  color: var(--color-onyx-canvas);
+  border-color: var(--color-ivory-text);
+}
+.chip[data-active='true'] .chip-dot {
+  background: var(--color-onyx-canvas);
+}
+.chip[data-landed='true'] {
+  background: transparent;
+  color: var(--color-ash-text);
+  border-color: rgba(112, 112, 125, 0.5);
+}
+.chip[data-landed='true'] .chip-dot {
+  background: transparent;
+  border: 1px solid var(--color-ash-text);
+  opacity: 1;
+}
+
+.scroll-cue {
+  border-color: rgba(237, 237, 243, 0.5);
+}
+.scroll-cue span {
+  background: var(--color-ivory-text);
+}
+
+.run {
+  background: var(--color-graphite-card);
+  border: 0;
+  border-radius: 12px;
+  box-shadow: none;
+}
+.run-bar {
+  background: transparent;
+  border-bottom: 1px solid rgba(112, 112, 125, 0.25);
+}
+.run-live {
+  background: var(--color-ivory-text);
+}
+.run-name {
+  color: var(--color-ash-text);
+}
+.run-body .sp-wrapper,
+.run-body .sp-layout,
+.run-body .sp-stack,
+.run-body .sp-preview-container,
+.run-body iframe {
+  background: var(--color-graphite-card) !important;
+}
+.run-boot {
+  background: linear-gradient(100deg, #1e1e2a 30%, #272735 50%, #1e1e2a 70%) 0 0 / 300% 100%;
+}
+
+/* ---------- work ---------- */
+
+.proj-shot {
+  border: 0;
+  border-radius: 12px;
+  background: var(--color-graphite-card);
+}
+/* imagery: slightly desaturated at rest, full colour on hover */
+.proj-shot img {
+  filter: saturate(0.75);
+  transition: filter 0.6s var(--ease), transform 0.7s var(--ease);
+}
+.proj-shot:hover img,
+.proj-shot:focus-visible img {
+  filter: none;
+}
+.proj-kind {
+  font: 400 12px/1 var(--font-body);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--color-ash-text);
+}
+.proj-year {
+  color: var(--color-ivory-text);
+}
+.proj-name {
+  font: 480 clamp(26px, 2.6vw, 32px) / 1.15 var(--font-display);
+  letter-spacing: 0.015em;
+}
+.proj-desc {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-ash-text);
+}
+.proj-stack li {
+  font: 400 14px/1 var(--font-body);
+  color: var(--color-ivory-text);
+  background: var(--color-obsidian-button);
+  border: 0;
+  border-radius: 40px;
+  padding: 8px 14px;
+}
+
+/* ---------- film ---------- */
+
+.film-frame {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: none;
+  background: var(--color-graphite-card);
+}
+.film-video {
+  background: var(--color-graphite-card);
+}
+.film-chap {
+  background: var(--color-graphite-card);
+  border: 1px solid transparent;
+  border-radius: 12px;
+}
+.film-chap:hover {
+  border-color: rgba(112, 112, 125, 0.6);
+}
+.film-chap[data-active='true'] {
+  background: var(--color-obsidian-button);
+  border-color: var(--color-mist-border);
+}
+.film-chap-at {
+  color: var(--color-ash-text);
+}
+.film-chap[data-active='true'] .film-chap-at {
+  color: var(--color-ivory-text);
+}
+.film-chap-body b {
+  font: 480 16px/1.35 var(--font-display);
+  letter-spacing: 0;
+  color: var(--color-ivory-text);
+}
+.film-chap-body span {
+  font-size: 14px;
+  color: var(--color-ash-text);
+}
+.film-notes {
+  border-top-color: rgba(112, 112, 125, 0.35);
+}
+.film-notes b {
+  font: 480 28px/1.2 var(--font-display);
+  letter-spacing: 0.015em;
+  color: var(--color-ivory-text);
+}
+.film-notes span {
+  font-size: 14px;
+  color: var(--color-ash-text);
+}
+
+/* ---------- experience ---------- */
+
+.job::before {
+  background: rgba(112, 112, 125, 0.5);
+}
+.job-node {
+  border: 1px solid var(--color-slate-border);
+  background: var(--color-onyx-canvas);
+}
+.job[data-current='true'] .job-node {
+  background: var(--color-ivory-text);
+  border-color: var(--color-ivory-text);
+}
+.job-when {
+  font: 400 14px/1.2 var(--font-body);
+  letter-spacing: 0;
+  color: var(--color-ash-text);
+}
+.job[data-current='true'] .job-when {
+  color: var(--color-ivory-text);
+}
+.job-title {
+  font: 480 21px/1.35 var(--font-display);
+  letter-spacing: 0;
+}
+.job-co {
+  font-size: 14px;
+  color: var(--color-ash-text);
+}
+.job-points li {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-ash-text);
+}
+.job-points li::before {
+  background: var(--color-slate-border);
+}
+
+/* ---------- contact ---------- */
+
+.links {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  gap: 12px;
+  overflow: visible;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.links a {
+  background: var(--color-graphite-card);
+  border-radius: 12px;
+  padding: 24px 28px;
+}
+.links a:hover {
+  background: var(--color-obsidian-button);
+}
+.link-label {
+  font: 400 12px/1 var(--font-body);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--color-ash-text);
+}
+.link-value {
+  font-size: 16px;
+  color: var(--color-ivory-text);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 767px) {
+  .h2 {
+    font-size: clamp(28px, 7.5vw, 32px);
+  }
+  .h2-big {
+    font-size: clamp(34px, 9vw, 42px);
+  }
+  .hero-h1 {
+    font-size: clamp(36px, 10vw, 44px);
+  }
+  .disc {
+    padding: 24px;
+  }
+  .links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

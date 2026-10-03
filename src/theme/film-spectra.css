@@ -1,0 +1,869 @@
+/* ===========================================================================
+   THE SPECTRA FILM SECTION
+   Ported from AISecurity/site/index.html, the `.hero-six` "watch-film" hero
+   (:283-332 for the six-variant, :157-270 for the base stage and caption lane).
+
+   TWO RULES HOLD THIS FILE TOGETHER, AND BOTH MATTER:
+
+   1. Every selector is prefixed #film. That is not tidiness, it is the whole
+      scoping strategy. Specificity >= (1,1,0) beats every class rule in
+      theme-ciridae.css whatever the import order, so there is no cascade race
+      to lose; and nothing here can reach a single pixel outside the section.
+      One unprefixed `.linkish` or `.h2` rule would repaint the entire page.
+
+   2. Every token is --fs-* and scoped to #film. Never the bare --line /
+      --text / --display names the source uses: those already exist globally
+      in index.css, and redefining them here would silently repaint any shared
+      component that ever landed inside this section.
+
+   The markup carries no .film-* class any more. theme-ciridae.css reaches into
+   this section through seven GROUPED selectors it shares with .facts b,
+   .proj-desc, .tcard, .picker and .linkish; renaming to .fs-* means those
+   groups keep working everywhere else and match nothing here, which is why
+   theme-ciridae.css needs no edit at all.
+
+   THREE DELIBERATE DEVIATIONS FROM THE SOURCE, all so the suite stays green:
+     - the caption is a flat 32px, not clamp(26px,3.6vw,46px). 3.6vw of 1440
+       is 52px and the type sweep fails above 32.5.
+     - the HUD number is weight 400, not 500. The sweep fails above 400, and
+       note `#film .fs-hud b` at (1,2,0) OVERRIDES theme-ciridae's protective
+       `b, strong { font-weight: 400 }`, so it has to be written explicitly.
+     - the rail marks are 44px, not 28px. They are real controls.
+   =========================================================================== */
+
+#film {
+  /* the SPECTRA palette, sampled from theme2.mp4 in the source repo */
+  --fs-void: #070605;
+  --fs-canvas: #0b0a09;
+  --fs-line: #2b2826;
+  --fs-line-interactive: #6b635a;
+  --fs-text: #f2ede6;
+  --fs-text-2: #b8b0a6;
+  --fs-text-muted: #8b8379;
+  --fs-gold: var(--cir-bone, #edebe7); /* was #dbb498, the SPECTRA gold */
+  --fs-gold-hot: #f0d2b4;
+  --fs-gold-deep: #8a6a4b;
+  --fs-alert: #e57f81;
+  --fs-safe: #3d9a6a;
+  --fs-safe-light: #83cda7;
+
+  --fs-display: 'Saira', 'Segoe UI', system-ui, sans-serif;
+  --fs-body: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --fs-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+
+  --fs-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* legibility layer 3 from the design package: type over live footage */
+  --fs-tshadow: 0 1px 2px rgba(5, 4, 3, 0.9), 0 3px 14px rgba(5, 4, 3, 0.6);
+
+  --fs-in: 24px;
+}
+
+/* ===========================================================================
+   THE PLAYER SECTIONS BELOW ARE COMMENTED OUT.
+   #film is no longer a video: it is a four-card deck (see THE DECK further
+   down, and src/ui/Film.jsx). The stage, HUD chip, stage rail, caption lane
+   and transport all belonged to the SPECTRA six-stage player and are kept
+   verbatim so it can be restored by uncommenting these and the matching
+   blocks in src/ui/Film.jsx and src/data/profile.js.
+   Any `*​/` inside a commented line is written with a zero-width space so the
+   surrounding block cannot close early.
+   =========================================================================== */
+/* /* --------------------------------------------------------------------------- */
+/*    THE STAGE */
+/*    The source is a sticky 100vh stage inside an 1100vh scroll hero. Play-driven, */
+/*    it is simply a 16/9 box in normal flow. */
+/*    --------------------------------------------------------------------------- *​/ */
+
+/* #film .fs-stage { */
+/*   position: relative; */
+/*   aspect-ratio: 16 / 9; */
+/*   overflow: hidden; */
+/*   background: var(--fs-void); */
+/*   margin: 34px 0 0; */
+/* } */
+
+/* #film .fs-bezel { */
+/*   position: absolute; */
+/*   inset: 0; */
+/*   overflow: hidden; */
+/*   background: var(--fs-void); */
+/* } */
+
+/* #film .fs-video, */
+/* #film .fs-poster { */
+/*   position: absolute; */
+/*   inset: 0; */
+/*   width: 100%; */
+/*   height: 100%; */
+/*   object-fit: cover; */
+/*   z-index: 2; */
+/* } */
+/* #film .fs-poster { */
+/*   z-index: 1; */
+/*   background-size: cover; */
+/*   background-position: center; */
+/*   transition: opacity 0.9s var(--fs-ease); */
+/* } */
+/* #film .fs-video { opacity: 0; transition: opacity 0.9s var(--fs-ease); } */
+/* #film .fs-stage[data-ready='true'] .fs-video { opacity: 1; } */
+/* #film .fs-stage[data-ready='true'] .fs-poster { opacity: 0; } */
+
+/* /* On a wide window the footage is narrower than the box: fade its side edges */
+/*    into the same dark ground rather than showing a hard seam. *​/ */
+/* #film .fs-bezel::before { */
+/*   content: ''; */
+/*   position: absolute; */
+/*   inset: 0; */
+/*   z-index: 3; */
+/*   pointer-events: none; */
+/*   background: linear-gradient( */
+/*     to right, */
+/*     var(--fs-void), */
+/*     rgba(7, 6, 5, 0) 7%, */
+/*     rgba(7, 6, 5, 0) 93%, */
+/*     var(--fs-void) */
+/*   ); */
+/* } */
+
+/* /* Legibility layers 1 and 3, full bleed: soft edges, and a floor of shade for */
+/*    the caption lane to sit on. This is what lets 32px type live over footage. *​/ */
+/* #film .fs-bezel::after { */
+/*   content: ''; */
+/*   position: absolute; */
+/*   inset: 0; */
+/*   z-index: 3; */
+/*   pointer-events: none; */
+/*   background: */
+/*     linear-gradient(to top, rgba(7, 6, 5, 0.95) 0%, rgba(7, 6, 5, 0.86) 18%, rgba(7, 6, 5, 0.5) 27%, rgba(7, 6, 5, 0) 36%), */
+/*     radial-gradient(ellipse 95% 90% at 50% 42%, transparent 62%, rgba(7, 6, 5, 0.62) 100%); */
+/* } */
+
+/* /* the inset frame and its corner ticks *​/ */
+/* #film .fs-frame { */
+/*   position: absolute; */
+/*   z-index: 6; */
+/*   pointer-events: none; */
+/*   inset: var(--fs-in); */
+/*   border: 1px solid rgba(219, 180, 152, 0.22); */
+/* } */
+/* #film .fs-tick { */
+/*   position: absolute; */
+/*   width: 12px; */
+/*   height: 12px; */
+/*   border: 1px solid var(--fs-gold-deep); */
+/*   opacity: 0.9; */
+/* } */
+/* #film .fs-tick.tl { top: -1px; left: -1px; border-right: 0; border-bottom: 0; } */
+/* #film .fs-tick.tr { top: -1px; right: -1px; border-left: 0; border-bottom: 0; } */
+/* #film .fs-tick.bl { bottom: -1px; left: -1px; border-right: 0; border-top: 0; } */
+/* #film .fs-tick.br { bottom: -1px; right: -1px; border-left: 0; border-top: 0; } */
+
+/* /* --------------------------------------------------------------------------- */
+/*    THE HUD CHIP */
+/*    Legibility layer 4: the only type allowed directly over live footage, and */
+/*    it gets its own scrim to earn that. */
+/*    --------------------------------------------------------------------------- *​/ */
+
+/* #film .fs-hud { */
+/*   position: absolute; */
+/*   z-index: 7; */
+/*   left: calc(var(--fs-in) + 18px); */
+/*   top: calc(var(--fs-in) + 16px); */
+/*   display: flex; */
+/*   align-items: center; */
+/*   gap: 10px; */
+/*   padding: 7px 12px; */
+/*   background: rgba(7, 6, 5, 0.62); */
+/*   border: 1px solid rgba(219, 180, 152, 0.24); */
+/*   backdrop-filter: blur(10px); */
+/*   -webkit-backdrop-filter: blur(10px); */
+/*   font-family: var(--fs-mono); */
+/*   font-size: 10.5px; */
+/*   letter-spacing: 0.1em; */
+/*   color: var(--fs-text-2); */
+/*   text-shadow: 0 1px 3px rgba(5, 4, 3, 0.9); */
+/* } */
+/* /* 400, not the source's 500: see the header note. *​/ */
+/* #film .fs-hud b { color: var(--fs-gold); font-weight: 400; } */
+/* #film .fs-dot { */
+/*   width: 5px; */
+/*   height: 5px; */
+/*   border-radius: 50%; */
+/*   background: var(--fs-alert); */
+/*   box-shadow: 0 0 7px var(--fs-alert); */
+/*   transition: background 0.6s var(--fs-ease), box-shadow 0.6s var(--fs-ease); */
+/* } */
+/* /* the readout ends on FIXED, so the dot has to end there too *​/ */
+/* #film .fs-hud[data-ok='true'] .fs-dot { background: var(--fs-safe); box-shadow: 0 0 8px var(--fs-safe); } */
+/* #film .fs-hud[data-ok='true'] b { color: var(--fs-safe); } */
+
+/* /* --------------------------------------------------------------------------- */
+/*    THE STAGE RAIL */
+/*    A hairline down the right side that fills as the film runs, with a mark per */
+/*    stage that seeks to it. */
+/*    --------------------------------------------------------------------------- *​/ */
+
+/* #film .fs-rail { */
+/*   position: absolute; */
+/*   z-index: 8; */
+/*   right: calc(var(--fs-in) + 18px); */
+/*   top: calc(var(--fs-in) + 48px); */
+/*   bottom: calc(var(--fs-in) + 48px); */
+/*   width: 64px; */
+/* } */
+/* #film .fs-rail::before { */
+/*   content: ''; */
+/*   position: absolute; */
+/*   top: -24px; */
+/*   bottom: -24px; */
+/*   right: -12px; */
+/*   width: 160px; */
+/*   pointer-events: none; */
+/*   background: linear-gradient(to left, rgba(7, 6, 5, 0.92) 0%, rgba(7, 6, 5, 0.88) 45%, rgba(7, 6, 5, 0.6) 72%, rgba(7, 6, 5, 0) 100%); */
+/* } */
+/* #film .fs-track { */
+/*   position: absolute; */
+/*   top: 0; */
+/*   bottom: 0; */
+/*   right: 10px; */
+/*   width: 22px; */
+/*   cursor: pointer; */
+/*   touch-action: none; */
+/* } */
+/* #film .fs-track::before { */
+/*   content: ''; */
+/*   position: absolute; */
+/*   left: 10px; */
+/*   top: 0; */
+/*   bottom: 0; */
+/*   width: 2px; */
+/*   background: rgba(242, 237, 230, 0.2); */
+/* } */
+/* /* --f is the only per-frame write: one custom property drives both the fill */
+/*    and the thumb, so the rAF loop never touches layout. *​/ */
+/* #film .fs-fill { */
+/*   position: absolute; */
+/*   left: 10px; */
+/*   top: 0; */
+/*   bottom: 0; */
+/*   width: 2px; */
+/*   background: linear-gradient(180deg, var(--fs-gold), var(--fs-safe)); */
+/*   transform: scaleY(var(--f, 0)); */
+/*   transform-origin: 50% 0; */
+/* } */
+/* #film .fs-thumb { */
+/*   position: absolute; */
+/*   left: 6px; */
+/*   top: calc(var(--f, 0) * 100%); */
+/*   width: 10px; */
+/*   height: 10px; */
+/*   margin-top: -5px; */
+/*   border-radius: 50%; */
+/*   background: var(--fs-gold-hot); */
+/*   box-shadow: 0 0 0 4px rgba(219, 180, 152, 0.2); */
+/*   pointer-events: none; */
+/* } */
+/* #film .fs-marks { */
+/*   position: absolute; */
+/*   inset: 0; */
+/*   list-style: none; */
+/*   margin: 0; */
+/*   padding: 0; */
+/*   pointer-events: none; */
+/* } */
+/* #film .fs-marks li { position: absolute; right: 0; transform: translateY(-50%); } */
+/* #film .fs-mark { */
+/*   pointer-events: auto; */
+/*   display: flex; */
+/*   align-items: center; */
+/*   gap: 8px; */
+/*   /* 44px, not the source's 28px: this is a real control. *​/ */
+/*   min-height: 44px; */
+/*   padding: 0 0 0 8px; */
+/*   background: none; */
+/*   border: 0; */
+/*   cursor: pointer; */
+/*   font-family: var(--fs-mono); */
+/*   font-size: 10.5px; */
+/*   font-weight: 400; */
+/*   letter-spacing: 0.1em; */
+/*   color: var(--fs-text-2); */
+/*   text-shadow: var(--fs-tshadow); */
+/*   transition: color 0.35s var(--fs-ease); */
+/* } */
+/* #film .fs-mark::after { */
+/*   content: ''; */
+/*   flex: 0 0 8px; */
+/*   width: 8px; */
+/*   height: 8px; */
+/*   margin-right: 17px; */
+/*   box-sizing: border-box; */
+/*   border: 1px solid var(--fs-line-interactive); */
+/*   background: var(--fs-void); */
+/*   transition: background 0.35s var(--fs-ease), border-color 0.35s var(--fs-ease); */
+/* } */
+/* #film .fs-mark:hover { color: var(--fs-text); } */
+/* #film .fs-mark[data-passed='true']::after { background: var(--fs-gold-deep); border-color: var(--fs-gold-deep); } */
+/* #film .fs-mark[aria-current='step'] { color: var(--fs-gold-hot); } */
+/* #film .fs-mark[aria-current='step']::after { */
+/*   background: var(--fs-gold); */
+/*   border-color: var(--fs-gold); */
+/*   box-shadow: 0 0 10px rgba(219, 180, 152, 0.6); */
+/* } */
+/* #film .fs-mark.is-fixed[aria-current='step'] { color: var(--fs-safe-light); } */
+/* #film .fs-mark.is-fixed[aria-current='step']::after { */
+/*   background: var(--fs-safe); */
+/*   border-color: var(--fs-safe); */
+/*   box-shadow: 0 0 10px rgba(61, 154, 106, 0.6); */
+/* } */
+/* #film .fs-mark svg { width: 11px; height: 11px; } */
+
+/* /* --------------------------------------------------------------------------- */
+/*    THE CAPTION LANE */
+/*    --------------------------------------------------------------------------- *​/ */
+
+/* #film .fs-lane { */
+/*   position: absolute; */
+/*   z-index: 7; */
+/*   left: 32px; */
+/*   right: 32px; */
+/*   bottom: calc(var(--fs-in) + clamp(18px, 4vh, 40px)); */
+/*   height: clamp(150px, 22%, 230px); */
+/* } */
+/* #film .fs-band { */
+/*   position: absolute; */
+/*   inset: 0; */
+/*   display: flex; */
+/*   flex-direction: column; */
+/*   justify-content: flex-end; */
+/*   align-items: center; */
+/*   text-align: center; */
+/*   opacity: 0; */
+/*   will-change: opacity; */
+/*   text-shadow: var(--fs-tshadow); */
+/* } */
+#film .fs-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin: 0 0 14px;
+  font-family: var(--fs-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fs-gold);
+}
+#film .fs-kicker::after { content: ''; flex: 0 0 26px; width: 26px; height: 1px; background: var(--fs-gold-deep); }
+
+/* /* A flat 32px, not the source's clamp to 46px: see the header note. *​/ */
+/* #film .fs-line { */
+/*   position: relative; */
+/*   margin: 0; */
+/*   font-family: var(--fs-display); */
+/*   font-weight: 200; */
+/*   font-size: 32px; */
+/*   line-height: 1.08; */
+/*   letter-spacing: -0.015em; */
+/*   max-width: 22ch; */
+/*   text-wrap: balance; */
+/*   color: var(--fs-text); */
+/* } */
+/* #film .fs-sub { */
+/*   margin: 18px 0 0; */
+/*   max-width: 72ch; */
+/*   font-family: var(--fs-mono); */
+/*   font-size: 11.5px; */
+/*   font-weight: 400; */
+/*   letter-spacing: 0.1em; */
+/*   text-transform: uppercase; */
+/*   color: var(--fs-text-2); */
+/* } */
+
+/* /* The blur entrance, scrubbed off --k: the soft copy sits behind the sharp one */
+/*    and dissolves as the sharp resolves. Transform and opacity only. *​/ */
+/* #film .fs-soft { */
+/*   position: absolute; */
+/*   left: 0; */
+/*   right: 0; */
+/*   filter: blur(11px); */
+/*   opacity: calc(1 - clamp(0, var(--k, 0) * 1.4, 1)); */
+/* } */
+/* #film .fs-sharp { opacity: clamp(0, (var(--k, 0) - 0.12) * 1.7, 1); } */
+
+/* /* the closing beat *​/ */
+/* #film .fs-band[data-fixed='true'] .fs-line { */
+/*   color: var(--fs-safe-light); */
+/*   text-shadow: 0 0 22px rgba(61, 154, 106, 0.55), var(--fs-tshadow); */
+/* } */
+
+/* /* visually hidden, so the layered soft/sharp pair is never read twice *​/ */
+#film .fs-vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* /* --------------------------------------------------------------------------- */
+/*    TRANSPORT */
+/*    Not in the source: there, scrolling IS the transport. Play-driven needs a */
+/*    control, and it is what makes the section operable from the keyboard. */
+/*    --------------------------------------------------------------------------- *​/ */
+
+/* #film .fs-bar { */
+/*   display: flex; */
+/*   align-items: center; */
+/*   gap: 14px; */
+/*   margin: 14px 0 0; */
+/* } */
+/* #film .fs-play { */
+/*   flex: 0 0 44px; */
+/*   width: 44px; */
+/*   height: 44px; */
+/*   display: grid; */
+/*   place-items: center; */
+/*   padding: 0; */
+/*   cursor: pointer; */
+/*   background: rgba(7, 6, 5, 0.55); */
+/*   border: 1px solid var(--fs-line-interactive); */
+/*   color: var(--fs-text); */
+/*   transition: border-color 0.35s var(--fs-ease), color 0.35s var(--fs-ease); */
+/* } */
+/* #film .fs-play:hover { border-color: var(--fs-gold); color: var(--fs-gold-hot); } */
+/* #film .fs-play svg { width: 16px; height: 16px; } */
+/* #film .fs-time { */
+/*   margin: 0; */
+/*   min-width: 9.5ch; */
+/*   font-family: var(--fs-mono); */
+/*   font-size: 12px; */
+/*   font-weight: 400; */
+/*   letter-spacing: 0.06em; */
+/*   color: var(--fs-text-2); */
+/* } */
+/* #film .fs-note { */
+/*   margin: 10px 0 0; */
+/*   font-family: var(--fs-mono); */
+/*   font-size: 12px; */
+/*   font-weight: 400; */
+/*   letter-spacing: 0.04em; */
+/*   color: var(--fs-alert); */
+/* } */
+/* #film .fs-note[hidden] { display: none; } */
+
+/* /* the one radius in the system, and only on focus *​/ */
+#film :focus-visible {
+  outline: 1px solid var(--fs-gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* /* --------------------------------------------------------------------------- */
+/*    RESPONSIVE */
+/*    --------------------------------------------------------------------------- *​/ */
+
+/* @media (max-width: 900px) { */
+/*   #film { --fs-in: 12px; } */
+
+/*   /* 16/9 at 375px is a 211px-tall stage, which the caption lane cannot fit in: */
+/*      it overflowed and collided with the HUD. The reference does not hit this */
+/*      because its stage is a full 100vh. Give the box a portrait ratio instead, */
+/*      and letterbox the footage into the top of it rather than cropping the */
+/*      sides off a code editor: `cover` would cut the very lines the film is */
+/*      about. The lane then sits in the clear space underneath. *​/ */
+/*   #film .fs-stage { aspect-ratio: 4 / 5; } */
+/*   #film .fs-video, */
+/*   #film .fs-poster { */
+/*     object-fit: contain; */
+/*     object-position: 50% 18%; */
+/*   } */
+
+/*   #film .fs-lane { */
+/*     left: 16px; */
+/*     right: 16px; */
+/*     height: auto; */
+/*     bottom: calc(var(--fs-in) + 16px); */
+/*   } */
+/*   #film .fs-band { position: static; opacity: inherit; } */
+/*   /* Absolute bands cannot stack in an auto-height lane, so they are layered */
+/*      back on top of each other in the grid instead. *​/ */
+/*   #film .fs-lane { display: grid; } */
+/*   #film .fs-lane > .fs-band { grid-area: 1 / 1; } */
+
+/*   #film .fs-line { font-size: 22px; max-width: 18ch; } */
+/*   #film .fs-sub { font-size: 10px; margin-top: 10px; letter-spacing: 0.08em; } */
+/*   #film .fs-kicker { font-size: 10px; margin-bottom: 8px; } */
+
+/*   /* the rail needs width the phone does not have; the HUD still names the stage *​/ */
+/*   #film .fs-rail { display: none; } */
+/*   #film .fs-hud { */
+/*     left: calc(var(--fs-in) + 8px); */
+/*     top: calc(var(--fs-in) + 8px); */
+/*     font-size: 9.5px; */
+/*     padding: 5px 9px; */
+/*   } */
+/* } */
+
+/* @media (prefers-reduced-motion: reduce) { */
+/*   #film .fs-mark, */
+/*   #film .fs-play, */
+/*   #film .fs-dot, */
+/*   #film .fs-video, */
+/*   #film .fs-poster { transition: none; } */
+/*   /* the blur entrance resolves to its final state instead of animating *​/ */
+/*   #film .fs-soft { opacity: 0 !important; filter: none !important; } */
+/*   #film .fs-sharp { opacity: 1 !important; } */
+/* } */
+
+/* ===========================================================================
+   THE DECK
+   Four cards stacked like sheets of paper. Throw the top one away and the next
+   rises. See src/ui/Film.jsx for the React boundary and src/ui/filmDeck.js for
+   the gesture.
+
+   The controller owns --x, --y, --r, --o and data-state. React owns --d (the
+   card's depth in the stack, 0 = top). Everything below is driven off those.
+   =========================================================================== */
+
+#film {
+  --fs-peek-y: 13px; /*  how far each card behind hangs below the one in front */
+  --fs-peek-s: 0.035; /* how much smaller each card behind sits */
+}
+
+/* ---- the two-column layout -------------------------------------------------
+   The prose on the left, the deck and its facts on the right. One narrow column
+   down a 1376px wrap left roughly 750px empty and made the section 1360px tall
+   in a 900px viewport; the right column is the tall one at ~660px, so it sets
+   the height now. */
+#film .fs-layout {
+  display: grid;
+  /* minmax(0, ...) on BOTH tracks, never `1fr 660px`: a grid item's default
+     min-width is auto, which is its content, and the code panel would refuse to
+     shrink below its longest line and push the grid wider than the wrap. This
+     is the one declaration standing between this section and a horizontal
+     scrollbar. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 660px);
+  gap: 64px;
+  align-items: start; /* the short left column must not stretch to the tall right one */
+}
+
+/* .sec gives every section clamp(72px, 11vw, 140px). This one earns less: the
+   two columns already fill the width, and 140px top and bottom is exactly what
+   pushed a 660px column past a 900px viewport. #film is (1,0,0) and beats .sec
+   at (0,1,0), so no global rule changes. */
+#film { padding: clamp(56px, 7vw, 96px) 0; }
+
+/* The deck now starts at the top of its own column, so it no longer needs the
+   40px that separated it from the prose above it. */
+#film .fs-deck { margin: 0; }
+
+/* overflow-x: clip with overflow-y: visible is the one pair CSS allows without
+   forcing the other axis to auto. The peeking edges below must not be cut, and
+   a card flung sideways must not widen the document. Written as two properties
+   so a later edit cannot collapse them into a shorthand and reintroduce a
+   scrollbar. */
+#film .fs-stack {
+  position: relative;
+  display: grid;
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-bottom: calc(var(--fs-peek-y) * 3); /* tracks the card count: 4 - 1 */
+}
+
+/* Grid stacking, the same trick the caption lane used below 900px: every card
+   takes cell 1/1, so the row height is the TALLEST card's measured height
+   rather than a guess. */
+#film .fs-card {
+  grid-area: 1 / 1;
+  justify-self: start;
+  width: min(100%, 620px);
+  display: grid;
+  align-content: start;
+  padding: 22px;
+  background: var(--fs-canvas);
+  border: 1px solid var(--fs-line);
+  /* transform-origin at the bottom edge is what makes the peek work: each card
+     behind is scaled about its own base and pushed down, so it shows a clean
+     band of its top-lit edge BELOW the card in front. Zero radius, so that band
+     is a hard line and a 1px border: the stack reads as sheets of paper. */
+  transform:
+    translate3d(var(--x, 0px), calc(var(--y, 0px) + var(--d, 0) * var(--fs-peek-y)), 0)
+    rotate(var(--r, 0deg))
+    scale(calc(1 - var(--d, 0) * var(--fs-peek-s)));
+  transform-origin: 50% 100%;
+  opacity: calc(var(--o, 1) * (1 - var(--d, 0) * 0.18));
+  z-index: calc(40 - var(--d, 0));
+  transition: transform 420ms var(--fs-ease), opacity 420ms var(--fs-ease);
+}
+
+/* pan-y, never none: `none` on a 360px-tall element traps vertical page
+   scrolling on a phone. The browser keeps the vertical axis and hands us the
+   horizontal one, which is the only axis the gesture uses. */
+#film .fs-card[data-top='true'] { cursor: grab; touch-action: pan-y; }
+#film .fs-card[data-state='drag'] {
+  transition: none; /* the drag is ref writes; nothing may interpolate */
+  cursor: grabbing;
+  user-select: none;
+}
+#film .fs-card[data-state='gone'] { z-index: 50; }
+/* Dismissed cards keep their box so the stack never shrinks under the reader
+   mid-deck, but stop taking pointers or focus. */
+#film .fs-card[data-gone='true'] { visibility: hidden; }
+
+#film .fs-card .fs-kicker { justify-content: flex-start; margin: 0 0 12px; }
+
+/* The card's line, carrying the sentence. The kicker above already names the
+   step, so this never repeats it. */
+#film .fs-card-title {
+  margin: 0 0 18px;
+  max-width: 30ch;
+  font-family: var(--fs-display);
+  font-weight: 200;
+  font-size: 26px;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  color: var(--fs-text);
+  text-wrap: balance;
+}
+
+#film .fs-code { position: relative; margin: 0; }
+#film .fs-code-note {
+  margin: 10px 0 0;
+  font-family: var(--fs-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fs-text-muted);
+}
+#film .fs-code-note[data-mark='bad'] { color: var(--fs-alert); }
+#film .fs-code-note[data-mark='good'] { color: var(--fs-safe-light); }
+
+/* ---- CodePanel inside #film ----------------------------------------------- */
+
+/* Zero radius is a rule of this system; index.css gives .cp its own. */
+#film .cp {
+  border-radius: 0;
+  border-color: var(--fs-line);
+  background: rgba(7, 6, 5, 0.72);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+#film .cp-bar { background: rgba(242, 237, 230, 0.03); border-bottom-color: var(--fs-line); }
+#film .cp-name { color: var(--fs-text-muted); }
+#film .cp-dot { background: rgba(219, 180, 152, 0.22); }
+
+/* theme-ciridae greyscales .cp-body so shiki's palette stops being a second
+   colour system. Same intent, but the filter moves onto the TOKEN SPANS: on
+   .cp-body it would also desaturate the alert/safe band below, which is the one
+   colour the card is allowed. */
+#film .cp-body { filter: none; overflow: hidden; }
+#film .cp-body .cp-line > span { filter: grayscale(1) contrast(1.05); }
+
+/* pre-wrap, not pre. At 375 the query line is ~430px of mono in a ~300px card,
+   and a scroller inside a card you are dragging sideways is the wrong answer.
+   Wrapping costs nothing because the band below rides .cp-line and wraps too. */
+#film .cp-body code { white-space: pre-wrap; }
+
+/* ---- the changed line -----------------------------------------------------
+   The band rides CodePanel's own .cp-line rather than a computed offset, which
+   kills every dependency on padding, bar height and line-height, and wraps
+   correctly on a phone. DEPENDS ON src/ui/CodePanel.jsx emitting one
+   div.cp-line per source line as a direct child of <code>; if that ever gains a
+   wrapper, the band moves to the wrong line with no error. Line 2 is the
+   changed line in both snippets, so the index is a literal. */
+#film .fs-code[data-mark] .cp-line:nth-child(2) { position: relative; }
+#film .fs-code[data-mark] .cp-line:nth-child(2)::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  right: -16px;
+  top: 0;
+  bottom: 0;
+}
+#film .fs-code[data-mark='bad'] .cp-line:nth-child(2)::before {
+  background: linear-gradient(90deg, rgba(229, 127, 129, 0.2), rgba(229, 127, 129, 0.05));
+  border-left: 2px solid var(--fs-alert);
+}
+#film .fs-code[data-mark='good'] .cp-line:nth-child(2)::before {
+  background: linear-gradient(90deg, rgba(61, 154, 106, 0.22), rgba(61, 154, 106, 0.05));
+  border-left: 2px solid var(--fs-safe);
+}
+
+/* ---- progress -------------------------------------------------------------- */
+
+#film .fs-meter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 16px;
+  font-family: var(--fs-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fs-text-2);
+}
+/* 400 written out: this sits at (1,2,0) and OVERRIDES theme-ciridae's
+   protective `b, strong { font-weight: 400 }`, so omitting it would let the
+   UA's bolder through and fail the type sweep. Same trap as .fs-hud b. */
+#film .fs-meter b { color: var(--fs-gold); font-weight: 400; }
+/* the hairline that re-ties the section's left column out to the wrap edge */
+#film .fs-meter::after { content: ''; flex: 1 1 auto; height: 1px; background: var(--fs-line); }
+
+#film .fs-pips { display: flex; gap: 7px; list-style: none; margin: 0; padding: 0; }
+/* .fs-mark::after's own treatment lifted into a row, so the section keeps its
+   vocabulary instead of importing a generic dot indicator. */
+#film .fs-pip {
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  border: 1px solid var(--fs-line-interactive);
+  background: var(--fs-void);
+  transition: background 0.35s var(--fs-ease), border-color 0.35s var(--fs-ease);
+}
+#film .fs-pip[data-state='done'] { background: var(--fs-gold-deep); border-color: var(--fs-gold-deep); }
+#film .fs-pip[data-state='now'] {
+  background: var(--fs-gold);
+  border-color: var(--fs-gold);
+  box-shadow: 0 0 10px rgba(219, 180, 152, 0.6);
+}
+#film .fs-meter[data-end='true'] .fs-pip {
+  background: var(--fs-safe);
+  border-color: var(--fs-safe);
+  box-shadow: none;
+}
+
+/* ---- controls, closing beat, hint ------------------------------------------ */
+
+#film .fs-bar { display: flex; align-items: center; gap: 12px; margin: 18px 0 0; }
+#film .fs-step {
+  min-height: 44px; /* the suite's touch-target floor */
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(7, 6, 5, 0.55);
+  border: 1px solid var(--fs-line-interactive);
+  color: var(--fs-text);
+  cursor: pointer;
+  font-family: var(--fs-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: border-color 0.35s var(--fs-ease), color 0.35s var(--fs-ease);
+}
+#film .fs-step:hover { border-color: var(--fs-gold); color: var(--fs-gold-hot); }
+#film .fs-step--next { border-color: var(--fs-gold-deep); color: var(--fs-gold); }
+#film .fs-step[aria-disabled='true'] { opacity: 0.38; cursor: default; }
+#film .fs-step[aria-disabled='true']:hover { border-color: var(--fs-line-interactive); color: var(--fs-text); }
+
+/* Same grid cell as the cards, behind them, uncovered as the last one leaves.
+   display:none when hidden, never opacity: 0. A resting zero opacity is the
+   exact shape rm-check.mjs hunts for. */
+#film .fs-done { grid-area: 1 / 1; align-self: center; margin: 0; padding: 22px; }
+#film .fs-done[hidden] { display: none; }
+#film .fs-done-line {
+  margin: 0;
+  font-family: var(--fs-display);
+  font-weight: 200;
+  font-size: 32px;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--fs-safe-light);
+  text-shadow: 0 0 22px rgba(61, 154, 106, 0.55), var(--fs-tshadow);
+}
+#film .fs-done-sub {
+  margin: 14px 0 0;
+  font-family: var(--fs-mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fs-text-2);
+}
+
+#film .fs-hint {
+  margin: 12px 0 0;
+  font-family: var(--fs-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--fs-text-muted);
+}
+
+/* ---- the facts list -------------------------------------------------------
+   Renamed off .film-notes, which is what finally makes src/film.css's header
+   comment true. list-style:none and padding:0 fix the bullets and the 40px
+   indent that put this list off the heading's left edge; the 52px column and
+   the 16px gap fix the number jammed against its line. */
+#film .fs-facts {
+  list-style: none;
+  margin: 40px 0 0;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--fs-line);
+  display: grid;
+  gap: 14px;
+}
+#film .fs-facts li {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 16px;
+  align-items: baseline;
+}
+/* 400 written out for the same reason as .fs-meter b above. */
+#film .fs-facts b {
+  font-family: var(--fs-display);
+  font-weight: 200;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--fs-gold);
+}
+#film .fs-facts span {
+  font-family: var(--fs-body);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fs-text-2);
+}
+
+/* Stacks at 1080, not 900: below roughly this the right column can no longer
+   hold a 620px card beside a readable measure of prose. The 900px block below
+   handles the card's own internals. */
+@media (max-width: 1080px) {
+  #film .fs-layout { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+  #film { padding: clamp(56px, 9vw, 110px) 0; }
+}
+
+@media (max-width: 900px) {
+  #film .fs-card { padding: 18px; }
+  #film .fs-card-title { font-size: 22px; }
+  #film .fs-card-say { font-size: 14px; margin-bottom: 14px; }
+  #film .fs-code[data-mark] .cp-line:nth-child(2)::before { left: -14px; right: -14px; }
+  #film .fs-done-line { font-size: 24px; }
+  #film .fs-done { padding: 18px; }
+  #film .fs-facts b { font-size: 22px; }
+  #film .fs-facts li { grid-template-columns: 44px minmax(0, 1fr); gap: 12px; }
+  #film .fs-meter { gap: 10px; font-size: 9.5px; }
+  #film .fs-bar { flex-wrap: wrap; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #film .fs-pip,
+  #film .fs-step { transition: none; }
+  /* A dismissed card vanishes in place rather than sweeping 700px across the
+     viewport. !important in a stylesheet outranks a non-important inline custom
+     property, which is how this reaches past the controller's own writes.
+     The DRAG itself stays enabled: it is direct manipulation under the reader's
+     own finger, not vestibular motion, and removing it would make the section
+     unusable by touch for exactly the people least served by an alternative. */
+  #film .fs-card[data-state='gone'] {
+    --x: 0px !important;
+    --y: 0px !important;
+    --r: 0deg !important;
+  }
+}

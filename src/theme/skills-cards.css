@@ -1,0 +1,418 @@
+/* ===========================================================================
+   SKILLS AND EXPERTISE, RESTYLED: six gold-framed glass cards
+   The About section's discipline grid becomes a band of its own: an eyebrow,
+   a two-tone heading, a stats row, a dark ridge line behind, then six cards,
+   each with a numbered medallion, its list on hex ticks, a link to the part
+   of the page that shows the work, and a small lit drawing on the right.
+
+   Loads last (see main.jsx). Every selector is .sec-about-scoped, and the
+   card keeps its .disciplines/.disc class names, so the reveal stagger in
+   index.css and its reduced-motion override still apply untouched.
+   =========================================================================== */
+
+/* RECOLOURED to the site's own theme. The section was built on a gold palette
+   borrowed from SPECTRA; everything gold now carries the hero panels' register
+   instead -- white and bone on cool near-black.
+
+   Ember is the only chromatic value left, and it is spent exactly twice:
+   the eyebrow and the six numbered medallions. That restraint is not taste,
+   it is the rule at ciridae-variables.css:19 -- ember is "never a fill:
+   hairlines, icon linework and small text highlights only" -- which is why the
+   heading, the stat numbers, the card rims, the corner brackets, the tick
+   marks and the link pill all went white rather than simply swapping hue.
+
+   Technology brand colours in skills-scenes.css are deliberately untouched:
+   React stays blue and MongoDB stays green, because they identify the thing
+   they are drawing. The one gold value in that file is handled there.
+
+   ORIGINAL GOLD PALETTE, kept for reference:
+   --sk-amber: #f2b36b;  --sk-hot: #ffd9a8;  --sk-gold: #dbb498;
+   --sk-rim: rgb(242 179 107 / 0.34);
+   --sk-grad: linear-gradient(100deg, #fbe2bb 0%, #f2b36b 55%, #d98f4a 100%); */
+.sec-about {
+  --sk-ember: var(--cir-ember, #cc6437); /* the one accent: eyebrow + medallions */
+  --sk-amber: var(--cir-bone, #edebe7); /*   hairlines, tick marks, the short rule */
+  --sk-hot: var(--cir-white, #ffffff); /*    bright edges, brackets, the link pill */
+  --sk-gold: var(--cir-bone, #edebe7); /*    declared but never referenced */
+  --sk-rim: rgb(255 255 255 / 0.3); /*       declared but never referenced */
+  --sk-grad: linear-gradient(100deg, #ffffff 0%, #edebe7 55%, #cecece 100%);
+  overflow-x: clip; /* the ridge line is full-bleed; the document never scrolls sideways */
+}
+
+/* ── The heading band ────────────────────────────────────────────────────── */
+
+.sec-about .skills-head {
+  position: relative;
+  isolation: isolate;
+  margin-top: clamp(72px, 9vw, 120px);
+  padding-top: clamp(24px, 3vw, 40px);
+  text-align: center;
+}
+
+.sec-about .skills-backdrop {
+  position: absolute;
+  z-index: -1;
+  top: -40px;
+  left: 50%;
+  width: 100vw;
+  height: calc(100% + 220px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.sec-about .skills-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 18px;
+  font: 400 11px/1 var(--cir-font-mono, var(--font-mono));
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  /* Ember spend 1 of 2. An 11px mono label with two 36px hairlines is exactly
+     what the system means by "small text highlights and hairlines". */
+  color: var(--sk-ember);
+}
+.sec-about .skills-eyebrow::before,
+.sec-about .skills-eyebrow::after {
+  content: '';
+  width: 36px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sk-ember));
+}
+.sec-about .skills-eyebrow::after {
+  background: linear-gradient(90deg, var(--sk-ember), transparent);
+}
+
+.sec-about .skills-title {
+  margin: 0 auto 18px;
+  max-width: 30ch;
+  font-family: var(--cir-font-cond, var(--font-display));
+  font-weight: 400;
+  font-size: clamp(26px, 3.2vw, 32px);
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--paper);
+}
+.sec-about .skills-hi {
+  display: block;
+  background: var(--sk-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sec-about .skills-lede {
+  margin: 0 auto;
+  max-width: 58ch;
+  font-family: var(--cir-font-body, var(--font-body));
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--cir-ash, var(--paper-dim));
+}
+
+/* Three numbers, divided by hairlines. dt after dd visually, dd first in
+   reading order would lie about which label goes with which number. */
+.sec-about .skills-stats {
+  display: inline-flex;
+  margin: clamp(28px, 3.4vw, 40px) auto 0;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  background: rgb(10 10 10 / 0.6); /* was rgb(10 9 8): the warm cast is gone */
+  box-shadow: 0 0 40px -12px rgb(255 255 255 / 0.22) inset;
+}
+.sec-about .skills-stats > div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 6px;
+  padding: 14px clamp(20px, 3vw, 38px);
+}
+.sec-about .skills-stats > div + div {
+  border-left: 1px solid rgb(255 255 255 / 0.14);
+}
+.sec-about .skills-stats dd {
+  margin: 0;
+  font: 400 28px/1 var(--cir-font-cond, var(--font-display));
+  background: var(--sk-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sec-about .skills-stats dt {
+  font: 400 10.5px/1 var(--cir-font-mono, var(--font-mono));
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-mute);
+}
+
+/* ── The cards ───────────────────────────────────────────────────────────── */
+
+.sec-about .disciplines {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(40px, 5vw, 64px);
+  padding-top: 0;
+  border-top: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.sec-about .disc {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  grid-template-rows: auto 1fr;
+  padding: 26px 24px 24px;
+  border-radius: 16px;
+  /* The card ground: was a warm brown-black (24 20 17 -> 9 8 8) lit by an amber
+     flare at the top right. Now neutral, lit by a white one. */
+  background:
+    radial-gradient(120% 70% at 85% 12%, rgb(255 255 255 / 0.08), transparent 60%),
+    linear-gradient(180deg, rgb(24 24 24 / 0.96), rgb(11 11 11 / 0.97));
+  box-shadow:
+    0 24px 60px -30px rgb(0 0 0 / 0.9),
+    0 0 0 1px rgb(0 0 0 / 0.5),
+    0 0 44px -22px rgb(255 255 255 / 0.3);
+}
+/* The rim: a gradient border drawn by a masked pseudo, brightest at the top
+   right where the light sits. White now, not gold. */
+.sec-about .disc::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(210deg, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.22) 35%, rgb(255 255 255 / 0.09) 70%, rgb(255 255 255 / 0.3));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease);
+  opacity: 0.8;
+}
+/* A soft glass sheen across the top edge. */
+.sec-about .disc::after {
+  content: '';
+  position: absolute;
+  inset: 1px 1px auto;
+  height: 40%;
+  z-index: -1;
+  border-radius: 15px 15px 0 0;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.05), transparent);
+  pointer-events: none;
+}
+
+/* Corner brackets, top left and bottom right, drawn as four hairlines. */
+.sec-about .disc-corner {
+  position: absolute;
+  inset: 9px;
+  z-index: -1;
+  pointer-events: none;
+  --c: linear-gradient(var(--sk-hot), var(--sk-hot));
+  background:
+    var(--c) left top / 18px 1px no-repeat,
+    var(--c) left top / 1px 18px no-repeat,
+    var(--c) right bottom / 18px 1px no-repeat,
+    var(--c) right bottom / 1px 18px no-repeat;
+  opacity: 0.55;
+}
+
+.sec-about .disc-body {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  grid-template-rows: auto auto auto 1fr auto;
+  align-content: start;
+}
+.sec-about .disc-no,
+.sec-about .disc-h,
+.sec-about .disc-line {
+  grid-column: 1;
+}
+.sec-about .disc ul,
+.sec-about .disc-more {
+  grid-column: 1 / -1;
+}
+
+.sec-about .disc-no {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  /* Ember spend 2 of 2: a 1px ring and a 12px mono numeral, the same treatment
+     the hero panels give their 01-04. The disc behind it is deliberately
+     NEUTRAL, not a tinted ember wash -- the old amber radial at 0.22 was a
+     fill, and a fill is the one thing ember is not allowed to be. The glow is
+     linework spill, kept faint. */
+  border: 1px solid rgb(204 100 55 / 0.6);
+  background: radial-gradient(circle at 50% 35%, rgb(255 255 255 / 0.06), rgb(11 11 11 / 0.9) 70%);
+  box-shadow: 0 0 18px -6px rgb(204 100 55 / 0.45);
+  font: 400 12px/1 var(--cir-font-mono, var(--font-mono));
+  letter-spacing: 0.06em;
+  color: var(--sk-ember);
+}
+
+.sec-about .disc-h {
+  margin: 0 0 10px;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--paper);
+}
+.sec-about .disc-line {
+  min-height: 0;
+  margin: 0 0 18px;
+  padding-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cir-ash, var(--paper-dim));
+  position: relative;
+}
+/* The short rule under the line. */
+.sec-about .disc-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 44px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--sk-amber), transparent);
+}
+
+.sec-about .disc ul {
+  gap: 9px;
+  align-content: start;
+  margin-bottom: 22px;
+}
+.sec-about .disc li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-left: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--cir-ash, var(--paper-dim));
+}
+.sec-about .disc li::before {
+  content: none;
+}
+.sec-about .disc-mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: var(--sk-amber);
+  filter: drop-shadow(0 0 4px rgb(255 255 255 / 0.3));
+}
+
+/* The link: a pill, 44px tall for fingers. */
+.sec-about .disc-more {
+  justify-self: start;
+  align-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px 0 20px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 0.32);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.09), rgb(255 255 255 / 0.02));
+  font: 400 11px/1 var(--cir-font-mono, var(--font-mono));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sk-hot);
+  text-decoration: none;
+  transition: background 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.sec-about .disc-more svg {
+  transition: transform 0.25s var(--ease);
+}
+.sec-about .disc-more:hover,
+.sec-about .disc-more:focus-visible {
+  border-color: var(--sk-hot);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0.06));
+  box-shadow: 0 0 22px -6px rgb(255 255 255 / 0.45);
+}
+.sec-about .disc-more:hover svg,
+.sec-about .disc-more:focus-visible svg {
+  transform: translateX(3px);
+}
+.sec-about .disc-more:focus-visible {
+  outline: 2px solid var(--sk-hot);
+  outline-offset: 3px;
+}
+
+/* The drawing sits in the top right, beside the number, name and line. */
+.sec-about .disc-art {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: start;
+  width: 100%;
+  max-width: 190px;
+  height: auto;
+  aspect-ratio: 260 / 220;
+  margin: -10px -8px 0 0;
+  pointer-events: none;
+  transition: transform 0.5s var(--ease);
+}
+
+.sec-about .disciplines.in .disc:hover::before {
+  opacity: 1;
+}
+.sec-about .disciplines.in .disc:hover .disc-art {
+  transform: translateY(-4px);
+}
+
+/* The art is placed over the body's first rows, so the body reserves the
+   right column only up to the line; the list and link run the full width. */
+.sec-about .disc-body > .disc-no,
+.sec-about .disc-body > .disc-h,
+.sec-about .disc-body > .disc-line {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Narrower screens ────────────────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  .sec-about .disciplines {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .sec-about .disciplines {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .sec-about .disc {
+    padding: 22px 18px 20px;
+  }
+  .sec-about .disc-art {
+    max-width: 150px;
+  }
+  .sec-about .skills-stats > div {
+    padding: 12px 16px;
+  }
+  .sec-about .skills-stats dd {
+    font-size: 24px;
+  }
+  .sec-about .skills-stats dt {
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+  }
+}
+
+@media (max-width: 380px) {
+  .sec-about .disc-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+  }
+}

@@ -1,0 +1,85 @@
+/* ===========================================================================
+   CIRIDAE — design tokens
+   "Ember void": flat, monochrome, orthogonal. One chromatic colour, used only
+   as a hairline. Nothing is larger than 32px. Nothing casts a shadow.
+
+   Every token here is prefixed --cir- and declared in exactly one place, so it
+   can never collide with index.css's --ink- / --paper-  set or with the
+   portfolio-next kit's --color- / --text-  set. Theming happens by re-pointing
+   THOSE names at these values (see theme-ciridae.css), never by redefining
+   them twice.
+
+   Note what is deliberately absent: there is no --cir-shadow, no --cir-glow,
+   and no size token above 32px. The rules of the system are enforced by the
+   vocabulary not existing, rather than by remembering not to use it.
+   =========================================================================== */
+
+:root {
+  /* ---- colour -------------------------------------------------------- */
+  /* The only chromatic value in the system. Never a fill: hairlines, icon
+     linework and small text highlights only. */
+  --cir-ember: #cc6437;
+
+  --cir-void: #0b0b0b;        /* the canvas */
+  --cir-abyss: #050505;       /* recessed: the news bar */
+  --cir-charcoal: #272a2a;    /* raised: content cards */
+  --cir-bone: #edebe7;        /* the single light break */
+  --cir-bone-dark: #dfddd9;
+  --cir-white: #ffffff;       /* headings, nav */
+  --cir-ash: #cecece;         /* body prose, secondary */
+  --cir-steel: #484848;       /* tertiary, and type on Bone */
+
+  --cir-hair: rgba(255, 255, 255, 0.09);
+  --cir-hair-soft: rgba(255, 255, 255, 0.05);
+  --cir-ash-hair: rgba(206, 206, 206, 0.35);
+
+  /* ---- the three type registers -------------------------------------- */
+  /* They never cross. Oswald stands in for Pragmatica Cond and is ALWAYS
+     uppercase. Inter is mixed-case prose. Roboto Mono is 11px system data. */
+  --cir-font-cond: 'Oswald', 'Arial Narrow', ui-sans-serif, sans-serif;
+  --cir-font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --cir-font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --cir-t-caption: 11px;
+  --cir-t-sm: 14px;
+  --cir-t-body: 15px;
+  --cir-t-body-lg: 18px;
+  --cir-t-h-sm: 20px;
+  --cir-t-h: 24px;
+  --cir-t-h-lg: 32px;   /* the ceiling. Nothing on the page exceeds this. */
+
+  --cir-track: -0.02em;        /* everything above 14px */
+  --cir-track-body: -0.01em;   /* 15px prose */
+  --cir-track-mono: -0.22px;   /* the 11px caption */
+
+  /* ---- radius -------------------------------------------------------- */
+  /* pill = interactive, rounded-rect = content. The 1440px stadium is the
+     signature: it appears on every button, badge and nav item. */
+  --cir-r-sm: 1px;
+  --cir-r-md: 4px;
+  --cir-r-lg: 10px;
+  --cir-r-pill: 1440px;
+
+  /* ---- layout -------------------------------------------------------- */
+  --cir-max: 1400px;
+  --cir-shell: min(var(--cir-max), 100% - 64px);
+  --cir-newsbar-h: 44px;
+  --cir-head-h: 72px;
+  --cir-sec-y: 80px;
+
+  /* ---- motion --------------------------------------------------------
+     The spec has no motion section at all, so this is invention, held to the
+     system's character: orthogonal, precise, mechanical. No spring, no
+     overshoot, no bounce — an overshoot curve would contradict every straight
+     edge in the design. */
+  --cir-ease: cubic-bezier(0.16, 0.84, 0.28, 1);        /* slow-out, no overshoot */
+  --cir-ease-mech: cubic-bezier(0.83, 0, 0.17, 1);      /* symmetric: draw-ins */
+
+  --cir-d-tap: 140ms;
+  --cir-d-state: 220ms;
+  --cir-d-enter: 520ms;
+  --cir-d-enter-lg: 720ms;
+  --cir-d-draw: 900ms;
+  --cir-stagger: 60ms;
+  --cir-lift: 14px;   /* entrance travel. Short on purpose. */
+}

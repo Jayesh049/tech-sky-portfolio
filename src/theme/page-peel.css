@@ -1,0 +1,381 @@
+/* ===========================================================================
+   THE PAGE PEEL, AND THE INTRODUCTION UNDERNEATH
+   … → Interactive → Page peel → Introduction
+
+   The stage stacks two layers of the same world: the introduction at the
+   bottom, the portfolio sheet (the hero section) on top. pagePeel.js clips
+   the sheet along the fold and draws the lifted part's back as the flap.
+
+     z 0  .cir-intro           the full video and the introduction
+     z 1  .sq-peel__shade      the lifted page's shadow on the introduction
+     z 2  .sq-hero             the sheet
+     z 3  .sq-peel__flapwrap   the back of the page, with its own shadow
+     z 4  handle / back        the corners you grab
+   =========================================================================== */
+
+.sq-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--cir-void);
+}
+.sq-stage > .sq-hero {
+  position: relative;
+  z-index: 2;
+}
+
+.sq-peel__shade,
+.sq-peel__flapwrap,
+.sq-peel__flap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.sq-peel__shade {
+  z-index: 1;
+  visibility: hidden;
+}
+/* The flap's own shadow falls on the sheet around it. The filter sits on a
+   wrapper so it shadows the clipped shape, not the full rectangle. */
+.sq-peel__flapwrap {
+  z-index: 3;
+  filter: drop-shadow(-2px 6px 10px rgb(0 0 0 / 0.5)) drop-shadow(0 0 1px rgb(0 0 0 / 0.6));
+}
+.sq-peel__flap {
+  visibility: hidden;
+  background-color: #d7d6d2;
+}
+
+/* ── The folded corner ───────────────────────────────────────────────────── */
+
+.sq-peel__handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 128px;
+  height: 116px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cir-white);
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.sq-stage[data-peel="peeling"] .sq-peel__handle { cursor: grabbing; }
+.sq-peel__handle:focus-visible {
+  outline: 1px solid var(--cir-bone);
+  outline-offset: -10px;
+}
+
+/* "Pull to explore →" — a whisper beside the corner, not a button. */
+.sq-peel__hint {
+  position: absolute;
+  right: 104px;
+  bottom: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-family: var(--cir-font-cond);
+  font-weight: 400;
+  font-size: var(--cir-t-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-ash);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity var(--cir-d-state) var(--cir-ease), color var(--cir-d-state) var(--cir-ease), translate var(--cir-d-state) var(--cir-ease);
+}
+.sq-peel__handle:hover .sq-peel__hint,
+.sq-peel__handle:focus-visible .sq-peel__hint {
+  color: var(--cir-white);
+  translate: -4px 0;
+}
+.sq-peel__arrow {
+  display: inline-block;
+  color: var(--cir-ember);
+  animation: sq-peel-nudge 2.4s var(--cir-ease) infinite;
+}
+@keyframes sq-peel-nudge {
+  0%, 60%, 100% { translate: 0 0; }
+  30% { translate: 4px 0; }
+}
+.sq-stage:not([data-peel="ready"]) .sq-peel__hint { opacity: 0; }
+
+/* ── The return corner ───────────────────────────────────────────────────── */
+
+.sq-peel__back {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  width: 96px;
+  height: 96px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cir-white);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sq-peel__back:focus-visible {
+  outline: 1px solid var(--cir-bone);
+  outline-offset: -10px;
+}
+.sq-peel__back-label {
+  position: absolute;
+  left: 78px;
+  top: 22px;
+  white-space: nowrap;
+  padding: 5px 11px;
+  border: 1px solid var(--cir-ash-hair);
+  border-radius: var(--cir-r-pill);
+  background: rgb(11 11 11 / 0.55);
+  font-family: var(--cir-font-cond);
+  font-size: var(--cir-t-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+  color: var(--cir-white);
+  opacity: 0;
+  translate: -6px 0;
+  animation: sq-peel-in 520ms var(--cir-ease) 900ms forwards;
+  transition: border-color var(--cir-d-state) var(--cir-ease);
+}
+.sq-peel__back:hover .sq-peel__back-label { border-color: var(--cir-white); }
+@keyframes sq-peel-in {
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* ── The introduction ────────────────────────────────────────────────────────
+   The same background video, now sharp, large and the subject; the words
+   beside it in the hero's own registers. */
+
+.cir-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 1fr);
+  background: var(--cir-void);
+  color: var(--cir-white);
+}
+
+.cir-intro__media {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+.cir-intro__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Keep you in frame: the subject sits right of centre in the loop. */
+  object-position: 72% 40%;
+}
+/* Only as much grade as it takes to belong: a soft vignette, and a long
+   fall-off into the void where the words begin. */
+.cir-intro__grade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(11 11 11 / 0) 62%, rgb(11 11 11 / 0.55) 84%, var(--cir-void) 100%),
+    linear-gradient(180deg, rgb(11 11 11 / 0.3) 0%, rgb(11 11 11 / 0) 22%, rgb(11 11 11 / 0) 72%, rgb(11 11 11 / 0.5) 100%),
+    radial-gradient(ellipse 90% 90% at 50% 50%, rgb(11 11 11 / 0) 60%, rgb(11 11 11 / 0.35) 100%);
+}
+
+/* The control is now the picture itself: tap anywhere on the video to play or
+   pause it. It stays a real <button> stretched over the whole media rather
+   than an onClick on the wrapping div, because a div would take the control
+   away from anyone not using a pointer -- no tab stop, no announced label, no
+   Enter/Space. Invisible, but still focusable, still labelled.
+
+   PREVIOUS 72px disc, kept so it can be restored:
+   .cir-intro__play {
+     position: absolute; left: 50%; top: 50%; translate: -50% -50%;
+     display: grid; place-items: center; width: 72px; height: 72px; padding: 0;
+     border: 1px solid rgb(255 255 255 / 0.85); border-radius: 50%;
+     background: rgb(11 11 11 / 0.18); color: var(--cir-white); cursor: pointer;
+     transition: background var(--cir-d-state) var(--cir-ease), scale var(--cir-d-state) var(--cir-ease);
+   }
+   .cir-intro__play svg { width: 22px; height: 22px; }
+   .cir-intro__play:hover { background: rgb(255 255 255 / 0.12); scale: 1.04; }
+   .cir-intro__play[aria-pressed="true"] { opacity: 0.5; }
+   .cir-intro__media:hover .cir-intro__play { opacity: 1; } */
+.cir-intro__play {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  /* -webkit-tap-highlight-color: the grey flash a phone paints over a tapped
+     control would cover the whole picture here. */
+  -webkit-tap-highlight-color: transparent;
+}
+/* Keyboard users still need to see where they are, so the focus ring stays --
+   drawn inside, because the button is flush with the media's edges. */
+.cir-intro__play:focus-visible { outline: 1px solid var(--cir-bone); outline-offset: -3px; }
+
+.cir-intro__body {
+  container-type: inline-size;
+  display: grid;
+  align-content: center;
+  gap: 16px;
+  padding: clamp(28px, 5vw, 72px) clamp(24px, 4.5vw, 72px) clamp(28px, 5vw, 72px) clamp(20px, 2.5vw, 40px);
+  min-width: 0;
+  overflow-y: auto;
+}
+.cir-intro__eyebrow {
+  margin: 0;
+  font-family: var(--cir-font-mono);
+  font-size: var(--cir-t-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cir-ash);
+}
+.cir-intro__title {
+  margin: 0;
+  font-family: var(--cir-font-body);
+  font-weight: 400;
+  font-size: var(--cir-t-h-lg);
+  line-height: 1.2;
+  letter-spacing: var(--cir-track);
+  text-transform: none;
+  text-wrap: balance;
+  outline: none;
+}
+/* The warm light of the hero, as type: the ember pushed toward bone so it
+   reads at text size on the void. */
+.cir-intro__name,
+.cir-intro__role {
+  color: color-mix(in oklab, var(--cir-ember) 72%, var(--cir-bone));
+}
+.cir-intro__role {
+  margin: 0;
+  font-family: var(--cir-font-body);
+  font-size: var(--cir-t-body-lg);
+  line-height: 1.4;
+  letter-spacing: var(--cir-track-body);
+}
+.cir-intro__lede {
+  margin: 4px 0 0;
+  max-width: 44ch;
+  font-family: var(--cir-font-body);
+  font-size: var(--cir-t-body);
+  line-height: 1.6;
+  letter-spacing: var(--cir-track-body);
+  color: var(--cir-ash);
+}
+
+.cir-intro__nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 22px;
+  border-top: 1px solid var(--cir-ash-hair);
+}
+.cir-intro__link {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding: 6px 4px 10px 0;
+  color: var(--cir-white);
+  text-decoration: none;
+}
+.cir-intro__icon { flex: none; width: 24px; height: 24px; }
+.cir-intro__link-text { display: grid; gap: 2px; min-width: 0; }
+.cir-intro__link-title {
+  font-family: var(--cir-font-cond);
+  font-size: var(--cir-t-sm);
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: var(--cir-track);
+}
+.cir-intro__link-sub {
+  font-family: var(--cir-font-body);
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--cir-ash);
+}
+/* Four across only when each can hold "Projects / Ideas to reality". */
+@container (max-width: 560px) {
+  .cir-intro__nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; }
+}
+
+/* The system's one accent, spent on the link you point at. */
+.cir-intro__link::after {
+  content: "";
+  position: absolute;
+  left: 34px;
+  right: 8px;
+  bottom: 0;
+  height: 1px;
+  background: var(--cir-ember);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--cir-d-enter) var(--cir-ease-mech);
+}
+.cir-intro__link:hover::after,
+.cir-intro__link:focus-visible::after { transform: scaleX(1); }
+.cir-intro__link:focus-visible { outline: 1px solid var(--cir-bone); outline-offset: 4px; }
+
+/* The words arrive after the page has gone: a short rise, staggered. */
+.cir-intro__body > * {
+  transition: opacity 600ms var(--cir-ease), translate 700ms var(--cir-ease);
+}
+.cir-intro[data-revealed="true"] .cir-intro__body > :nth-child(2) { transition-delay: 60ms; }
+.cir-intro[data-revealed="true"] .cir-intro__body > :nth-child(3) { transition-delay: 120ms; }
+.cir-intro[data-revealed="true"] .cir-intro__body > :nth-child(4) { transition-delay: 180ms; }
+.cir-intro[data-revealed="true"] .cir-intro__body > :nth-child(5) { transition-delay: 240ms; }
+.sq-stage:is([data-peel="idle"], [data-peel="ready"], [data-peel="peeling"]) .cir-intro__body > * {
+  opacity: 0;
+  translate: 0 var(--cir-lift);
+}
+
+/* Nothing on the sheet needs to animate once it's gone. */
+.sq-stage[data-peel="peeled"] .sq-hero * { animation-play-state: paused !important; }
+
+/* ── Narrow screens ──────────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .cir-intro {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(220px, 44%) minmax(0, 1fr);
+  }
+  .cir-intro__grade {
+    background:
+      linear-gradient(180deg, rgb(11 11 11 / 0.25) 0%, rgb(11 11 11 / 0) 25%, rgb(11 11 11 / 0) 60%, var(--cir-void) 100%);
+  }
+  .cir-intro__body {
+    align-content: start;
+    gap: 12px;
+    padding: 8px 20px 28px;
+  }
+  .cir-intro__title { font-size: var(--cir-t-h); }
+  .cir-intro__role { font-size: var(--cir-t-body); }
+  .cir-intro__nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; padding-top: 14px; margin-top: 4px; }
+  /* The disc used to shrink here for narrow screens. The control is the whole
+     picture now, so it needs no size of its own at any width.
+  .cir-intro__play { width: 60px; height: 60px; } */
+  .sq-peel__handle { width: 104px; height: 96px; }
+  .sq-peel__hint { right: 84px; bottom: 18px; }
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .sq-peel__arrow { animation: none; }
+  .sq-peel__back-label { animation: none; opacity: 1; translate: none; }
+  .cir-intro__body > * { transition: opacity 200ms linear; translate: none !important; }
+}

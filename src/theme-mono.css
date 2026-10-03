@@ -1,0 +1,759 @@
+/* ============================================================
+   THEME-MONO
+   The pf2 "cinematic monochrome gallery" system laid over Tech Sky.
+   Source of truth: pf2/DESIGN.md + src/pf2-variables.css.
+
+   Direction:
+   - The 3D sky is the one full-colour image on the page. Everything
+     over it and every section after it is black and white.
+   - Colour elsewhere is a reward, not decoration: logos and work
+     screenshots ease into colour on hover; the film video and the live
+     runtime output keep theirs because they are the content.
+   - Whisper-weight display type, sharp buttons, 8px cards, pill tags,
+     no shadows, no gradients, no blur outside the sky.
+
+   Loaded after index.css and film.css. Remove the two imports in
+   src/main.jsx to return to the previous look.
+   ============================================================ */
+
+/* ---------- tokens: map the site's names onto pf2 values ---------- */
+
+:root {
+  --ink-0: var(--color-obsidian);
+  --ink-1: var(--color-obsidian);
+  --ink-2: var(--color-charcoal);
+  --ink-3: var(--color-charcoal);
+
+  --paper: var(--color-paper);
+  --paper-dim: var(--color-fog);
+  --paper-mute: var(--color-ash);
+
+  --accent: var(--color-paper);
+  --accent-deep: var(--color-paper);
+
+  --line: var(--color-charcoal);
+  --line-strong: var(--color-charcoal);
+
+  --glass: transparent;
+  --glass-hi: transparent;
+
+  --font-display: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Newsreader', 'Tiempos Text', Georgia, Cambria, serif;
+
+  --shell: min(var(--page-max-width), 100% - 48px);
+}
+
+/* Light bands re-scope the same names, so every var(--...) flips inside them. */
+.sec-about,
+.sec-work,
+.sec-exp {
+  --ink-0: var(--color-paper);
+  --ink-1: var(--color-paper);
+  --ink-2: var(--color-fog);
+  --ink-3: var(--color-fog);
+  --paper: var(--color-obsidian);
+  --paper-dim: var(--color-charcoal);
+  --paper-mute: var(--color-ash);
+  --accent: var(--color-obsidian);
+  --line: var(--color-fog);
+  --line-strong: var(--color-fog);
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+}
+
+/* Dark bands */
+.sec-stack,
+.sec-film,
+.sec-contact,
+.foot {
+  background: var(--color-obsidian);
+  color: var(--color-paper);
+}
+
+/* ---------- base ---------- */
+
+body {
+  background: var(--color-obsidian);
+  color: var(--color-paper);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--paper);
+  color: var(--ink-0);
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 0;
+}
+
+.skip {
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+  border-radius: 0;
+  font: 500 13px/1 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sec {
+  padding: clamp(80px, 10vw, 120px) 0;
+}
+
+/* ---------- type ---------- */
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(40px, 5.6vw, 64px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  max-width: 18ch;
+  margin-bottom: 24px;
+}
+.h2-wide {
+  max-width: 22ch;
+}
+.h2-big {
+  font-size: clamp(44px, 7vw, 72px);
+  line-height: 0.93;
+  letter-spacing: -0.06em;
+  max-width: 14ch;
+}
+
+.lede {
+  color: var(--paper-dim);
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.65;
+}
+
+/* the typed source line becomes a quiet editorial kicker */
+.srcline {
+  font: 400 12px/1.5 var(--font-mono);
+  color: var(--paper-mute);
+  letter-spacing: 0.02em;
+  opacity: 1;
+  margin-bottom: 28px;
+}
+.srcline-caret {
+  background: var(--paper);
+}
+
+/* ---------- buttons: sharp, uppercase, invert on hover ---------- */
+
+.btn {
+  border-radius: var(--radius-buttons);
+  font: 500 13px/1 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 16px 28px;
+  border: 1px solid transparent;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease),
+    border-color 0.25s var(--ease);
+}
+.btn:hover {
+  transform: none;
+}
+.btn-primary {
+  background: var(--paper);
+  color: var(--ink-0);
+  border-color: var(--paper);
+}
+.btn-primary:hover {
+  background: transparent;
+  color: var(--paper);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--paper);
+  border-color: var(--paper);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.btn-ghost:hover {
+  background: var(--paper);
+  color: var(--ink-0);
+  border-color: var(--paper);
+}
+.btn-small {
+  font-size: 12px;
+  padding: 12px 20px;
+  border-radius: var(--radius-buttons);
+}
+.btn-big {
+  font-size: 14px;
+  padding: 20px 40px;
+  border-radius: var(--radius-buttons);
+}
+
+.linkish {
+  font: 500 12px/1 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper-mute);
+}
+.linkish:hover {
+  color: var(--paper);
+  border-bottom-color: var(--paper);
+}
+
+/* ---------- nav: a solid black letterbox over the sky ---------- */
+
+.nav {
+  background: var(--color-obsidian);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid var(--color-charcoal);
+}
+.nav-mark {
+  color: var(--color-paper);
+}
+.nav-initials {
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+  border-radius: 0;
+  font: 500 12px/1 var(--font-body);
+  letter-spacing: 0.02em;
+}
+.nav-name {
+  font: 500 14px/1 var(--font-display);
+  letter-spacing: -0.01em;
+}
+.nav ul a {
+  font: 400 13px/1 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-paper);
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s var(--ease);
+}
+.nav ul a:hover {
+  color: var(--color-paper);
+  border-bottom-color: var(--color-paper);
+}
+
+/* ---------- hero: the sky keeps its colour; everything on it is monochrome ---------- */
+
+.hero-h1 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(44px, 7vw, 88px);
+  line-height: 0.93;
+  letter-spacing: -0.055em;
+  max-width: 12ch;
+  color: var(--color-paper);
+  margin-bottom: 24px;
+}
+.hero-sub {
+  color: var(--color-fog);
+  font-size: clamp(16px, 1.3vw, 17px);
+  line-height: 1.6;
+}
+
+.eyebrow {
+  background: rgba(0, 0, 0, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: var(--radius-pills);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: var(--color-paper);
+  font: 500 11.5px/1 var(--font-body);
+  letter-spacing: 0.14em;
+}
+.pip,
+.pip::after {
+  background: var(--color-paper);
+}
+
+.picker {
+  background: rgba(0, 0, 0, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-cards);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  padding: 20px;
+}
+.picker-title {
+  font: 500 12px/1.4 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-paper);
+}
+.picker-count {
+  color: var(--color-ash);
+}
+.picker-foot {
+  border-top-color: rgba(255, 255, 255, 0.14);
+}
+.hero .linkish {
+  color: var(--color-fog);
+}
+.hero .linkish:hover {
+  color: var(--color-paper);
+}
+
+/* pf2 "Pill Category Tab" */
+.chip {
+  font: 400 13px/1 var(--font-body);
+  color: var(--color-paper);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-pills);
+  padding: 9px 16px;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease),
+    border-color 0.2s var(--ease);
+}
+.chip-dot {
+  background: var(--color-paper);
+  box-shadow: none;
+}
+.chip:hover:not(:disabled) {
+  background: var(--color-fog);
+  color: var(--color-obsidian);
+  border-color: var(--color-fog);
+  transform: none;
+}
+.chip:hover:not(:disabled) .chip-dot {
+  background: var(--color-obsidian);
+  box-shadow: none;
+}
+.chip[data-active='true'] {
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+  border-color: var(--color-paper);
+}
+.chip[data-active='true'] .chip-dot {
+  background: var(--color-obsidian);
+}
+.chip[data-landed='true'] {
+  color: var(--color-ash);
+  border-color: var(--color-charcoal);
+  background: transparent;
+}
+.chip[data-landed='true'] .chip-dot {
+  background: transparent;
+  border: 1px solid var(--color-ash);
+  opacity: 1;
+}
+
+.scroll-cue {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.scroll-cue span {
+  background: var(--color-paper);
+}
+
+/* the live runtime: monochrome frame, the running output keeps its colour */
+.run {
+  background: var(--color-obsidian);
+  border: 1px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+  box-shadow: none;
+}
+.run-bar {
+  background: transparent;
+  border-bottom: 1px solid var(--color-charcoal);
+}
+.run-live {
+  background: var(--color-paper);
+}
+.run-name {
+  color: var(--color-ash);
+}
+.run-body .sp-wrapper,
+.run-body .sp-layout,
+.run-body .sp-stack,
+.run-body .sp-preview-container,
+.run-body iframe {
+  background: var(--color-obsidian) !important;
+}
+.run-boot {
+  background: linear-gradient(100deg, #000000 30%, #2f2f2f 50%, #000000 70%) 0 0 / 300% 100%;
+}
+
+/* ---------- code panels (hero stage, rail, stack cards) ---------- */
+
+.cp {
+  background: var(--color-obsidian);
+  border: 1px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.cp-bar {
+  background: transparent;
+  border-bottom: 1px solid var(--color-charcoal);
+}
+.cp-dot {
+  background: var(--color-charcoal);
+}
+.cp-name {
+  color: var(--color-ash);
+}
+/* syntax keeps its hierarchy, expressed as tones instead of hues */
+.cp-body {
+  color: var(--color-fog);
+  filter: grayscale(1) contrast(1.15) brightness(1.08);
+}
+.cp-caret {
+  background: var(--color-paper);
+}
+
+/* ---------- about: white band, facts as a stat display ---------- */
+
+.facts {
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  gap: 0;
+}
+.facts li {
+  background: none;
+  padding: 22px 0;
+  gap: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.facts b {
+  font: 300 clamp(44px, 5vw, 64px)/0.93 var(--font-display);
+  color: var(--paper);
+  letter-spacing: -0.06em;
+  min-width: 3ch;
+}
+.facts span {
+  font: 400 12px/1.4 var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--paper-mute);
+}
+
+.disciplines {
+  border-top: 1px solid var(--line);
+}
+.disc-h {
+  font: 400 26px/1.1 var(--font-serif);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+.disc-line {
+  font-size: 14px;
+  color: var(--paper-mute);
+}
+.disc li {
+  color: var(--paper-dim);
+}
+.disc li::before {
+  background: var(--paper);
+  opacity: 1;
+}
+
+/* ---------- stack: black band, dark feature cards ---------- */
+
+.sec-stack {
+  background: var(--color-obsidian);
+}
+.tcard {
+  background: transparent;
+  border: 1px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+  padding: 24px;
+}
+.tcard:hover {
+  transform: none;
+  background: transparent;
+  border-color: var(--color-ash);
+}
+.tcard[data-landed='true'] {
+  border-color: var(--color-charcoal);
+}
+/* Marks are pure white; the brand colour is the reward on hover.
+   The logo files carry no fill (they draw black), so each file is used as a
+   mask and the colour comes from the background: white at rest, easing to
+   the technology's own colour on hover or keyboard focus. */
+.tcard-logo {
+  filter: none;
+  object-position: -9999px 0;
+  background-color: var(--color-paper);
+  -webkit-mask: var(--logo) center / contain no-repeat;
+  mask: var(--logo) center / contain no-repeat;
+  transition: background-color 0.6s var(--ease);
+}
+.tcard:hover .tcard-logo,
+.tcard:focus-within .tcard-logo {
+  background-color: var(--tech);
+}
+.tcard-logo[src$='/react.svg'] {
+  --logo: url('/logos/react.svg');
+}
+.tcard-logo[src$='/typescript.svg'] {
+  --logo: url('/logos/typescript.svg');
+}
+.tcard-logo[src$='/nodedotjs.svg'] {
+  --logo: url('/logos/nodedotjs.svg');
+}
+.tcard-logo[src$='/express.svg'] {
+  --logo: url('/logos/express.svg');
+}
+.tcard-logo[src$='/mongodb.svg'] {
+  --logo: url('/logos/mongodb.svg');
+}
+.tcard-logo[src$='/mysql.svg'] {
+  --logo: url('/logos/mysql.svg');
+}
+.tcard-logo[src$='/tailwindcss.svg'] {
+  --logo: url('/logos/tailwindcss.svg');
+}
+.tcard-logo[src$='/redux.svg'] {
+  --logo: url('/logos/redux.svg');
+}
+.tcard-logo[src$='/threedotjs.svg'] {
+  --logo: url('/logos/threedotjs.svg');
+}
+.tcard-logo[src$='/springboot.svg'] {
+  --logo: url('/logos/springboot.svg');
+}
+.tcard-name {
+  font: 300 20px/1.2 var(--font-display);
+  color: var(--color-paper);
+  letter-spacing: -0.02em;
+}
+.tcard-blurb {
+  font-size: 13px;
+  color: var(--color-ash);
+}
+.tcard-code .cp {
+  background: var(--color-obsidian);
+}
+
+/* ---------- work: white band, gallery screenshots ---------- */
+
+.proj-shot {
+  border-radius: var(--radius-cards);
+  border: 1px solid var(--color-fog);
+  background: var(--color-fog);
+}
+.proj-shot img {
+  filter: grayscale(1);
+  transition: filter 0.6s var(--ease), transform 0.7s var(--ease);
+}
+.proj-shot:hover img,
+.proj-shot:focus-visible img {
+  filter: none;
+}
+.proj-kind {
+  color: var(--color-ash);
+  letter-spacing: 0.12em;
+}
+.proj-year {
+  color: var(--color-obsidian);
+}
+.proj-name {
+  font: 400 clamp(26px, 3vw, 34px) / 1.1 var(--font-serif);
+  letter-spacing: -0.02em;
+}
+.proj-desc {
+  color: var(--color-charcoal);
+  font-size: 15px;
+}
+.proj-stack li {
+  font: 500 12px/1 var(--font-body);
+  color: var(--color-charcoal);
+  border: 1px solid var(--color-fog);
+  border-radius: var(--radius-pills);
+  padding: 7px 14px;
+}
+
+/* ---------- film: black band, the video is the one colour image ---------- */
+
+.sec-film {
+  background: var(--color-obsidian);
+}
+.film-frame {
+  border: 1px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+  box-shadow: none;
+  background: var(--color-obsidian);
+}
+.film-video {
+  background: var(--color-obsidian);
+}
+.film-chap {
+  background: transparent;
+  border: 1px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+}
+.film-chap:hover {
+  border-color: var(--color-ash);
+}
+.film-chap[data-active='true'] {
+  background: transparent;
+  border-color: var(--color-paper);
+}
+.film-chap:focus-visible {
+  outline-color: var(--color-paper);
+}
+.film-chap-at {
+  color: var(--color-ash);
+}
+.film-chap[data-active='true'] .film-chap-at {
+  color: var(--color-paper);
+}
+.film-chap-body b {
+  font: 500 15px/1.3 var(--font-display);
+  color: var(--color-paper);
+}
+.film-chap-body span {
+  font-size: 14px;
+  color: var(--color-ash);
+}
+.film-notes {
+  border-top-color: var(--color-charcoal);
+}
+.film-notes li {
+  grid-template-columns: 60px minmax(0, 1fr);
+}
+.film-notes b {
+  font: 300 40px/1 var(--font-display);
+  letter-spacing: -0.05em;
+  color: var(--color-paper);
+}
+.film-notes span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ash);
+}
+
+/* ---------- experience: white band, hairline timeline ---------- */
+
+.job::before {
+  background: var(--color-fog);
+}
+.job-node {
+  border: 1px solid var(--color-obsidian);
+  background: var(--color-paper);
+}
+.job[data-current='true'] .job-node {
+  background: var(--color-obsidian);
+  border-color: var(--color-obsidian);
+}
+.job-when {
+  color: var(--color-ash);
+}
+.job[data-current='true'] .job-when {
+  color: var(--color-obsidian);
+}
+.job-title {
+  font: 400 26px/1.15 var(--font-serif);
+  letter-spacing: -0.02em;
+}
+.job-co {
+  font-size: 14px;
+  color: var(--color-ash);
+}
+.job-points li {
+  color: var(--color-charcoal);
+}
+.job-points li::before {
+  background: var(--color-obsidian);
+}
+
+/* ---------- contact: black band, one ghost call to action ---------- */
+
+.sec-contact .btn-primary {
+  background: transparent;
+  color: var(--color-paper);
+  border-color: var(--color-paper);
+}
+.sec-contact .btn-primary:hover {
+  background: var(--color-paper);
+  color: var(--color-obsidian);
+}
+.links {
+  background: var(--color-charcoal);
+  border: 1px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+}
+.links a,
+.links a:hover {
+  background: var(--color-obsidian);
+}
+.links a:hover .link-value {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.link-label {
+  font: 500 11px/1 var(--font-body);
+  letter-spacing: 0.14em;
+  color: var(--color-ash);
+}
+.link-value {
+  font-size: 14px;
+  color: var(--color-paper);
+}
+
+/* ---------- footer ---------- */
+
+.foot {
+  border-top: 1px solid var(--color-charcoal);
+}
+.foot p {
+  color: var(--color-ash);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 767px) {
+  /* whisper-weight only stays legible over imagery at large sizes */
+  .hero-h1 {
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .h2 {
+    font-size: clamp(34px, 9vw, 40px);
+  }
+  .h2-big {
+    font-size: clamp(38px, 10vw, 48px);
+  }
+  .facts b {
+    font-size: 44px;
+  }
+  .film-notes b {
+    font-size: 32px;
+  }
+}
+
+/* ---------- fixes from the visual review ---------- */
+
+/* anchors without their own colour were falling back to browser blue */
+a {
+  color: inherit;
+}
+
+/* plain small buttons (the work "Open it" links) read as outline buttons in their band */
+.btn:not(.btn-primary):not(.btn-ghost) {
+  background: transparent;
+  color: var(--paper);
+  border-color: var(--paper);
+}
+.btn:not(.btn-primary):not(.btn-ghost):hover {
+  background: var(--paper);
+  color: var(--ink-0);
+}
+
+/* four contact links as an even 2 x 2 grid, so no empty charcoal cell shows */
+.links {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 767px) {
+  .links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
