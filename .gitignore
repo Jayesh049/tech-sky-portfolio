@@ -1,0 +1,21 @@
+node_modules
+dist
+review
+.DS_Store
+*.local
+.vite
+.env
+.env.*
+!.env.example
+
+# Local junk / not part of the site
+AnyDesk.exe
+*.zip
+.agents
+.claude
+10k-websites-skill
+media-retired
+film
+hero-sequence
+*.jpg
+!public/**/*.jpg
