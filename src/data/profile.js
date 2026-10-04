@@ -149,17 +149,6 @@ export const work = [
     code: 'https://github.com/Jayesh049/FoodApp_Frontend',
     live: 'https://foodapp-frontend-z1zg.onrender.com/',
   },
-  {
-    name: 'Genrich Restaurant',
-    year: '2022',
-    kind: 'Interface study',
-    description:
-      'A restaurant site built as a typography and layout exercise. No backend, no shortcuts on the spacing. The one where I stopped guessing at design and started measuring it.',
-    stack: ['React', 'JavaScript', 'UI/UX'],
-    image: 'work/gen.webp',
-    code: 'https://github.com/Jayesh049/Gerich_restaurant',
-    live: 'https://genrchrestaurant421.netlify.app/',
-  },
 ];
 
 export const experience = [
