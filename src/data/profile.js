@@ -117,12 +117,23 @@ export const disciplines = [
 
 export const work = [
   {
-    name: 'Soft Wellness',
+    name: 'SPECTRA Remediate',
     year: '2026',
-    kind: 'Doctor and patient platform',
+    kind: 'AI security command',
     description:
-      'A full Soft Wellness hub for doctors and patients: appointments, care team, billing, messages and reminders, plus a medical hub on a TypeScript MCP server with Prisma, Postgres, RAG and live consults. Synthetic and educational, built end to end from API to UI.',
-    stack: ['Next.js', 'TypeScript', 'Node', 'Prisma', 'PostgreSQL', 'MCP'],
+      'Private AppSec product that runs detect, explain, fix, human review and verify. A finding is not closed until it is proven fixed. Multi-tenant console with posture scoring, severity-ranked findings, ZIP or folder upload, and GitHub App PRs per finding over a Fastify API, Next.js console and Postgres.',
+    stack: ['Next.js', 'Fastify', 'PostgreSQL', 'Python', 'Docker', '.NET'],
+    image: 'work/spectra.webp',
+    code: 'https://github.com/Jayesh049/spectra-remediate',
+    live: 'https://spectra-remediate-site.onrender.com/',
+  },
+  {
+    name: 'Agents Assemble',
+    year: '2026',
+    kind: 'Healthcare AI agent platform',
+    description:
+      'Agentic AI over medical knowledge: 36+ MCP tools, RAG over medical textbooks with embeddings and pgvector, dual MCP transports plus a mirrored REST API, and a Next.js product UI with a Python Flask ML sidecar. Synthetic and educational, built end to end.',
+    stack: ['Next.js', 'TypeScript', 'MCP', 'RAG', 'PostgreSQL', 'Python'],
     image: 'work/soft-wellness.webp',
     code: 'https://github.com/Jayesh049/MCPServer',
     live: 'https://mcp-server-amber-two.vercel.app/',
@@ -136,7 +147,7 @@ export const work = [
     stack: ['React', 'MongoDB', 'Express', 'Node'],
     image: 'work/eatfit.webp',
     code: 'https://github.com/Jayesh049/FoodApp_Frontend',
-    live: 'https://foodappfrontend421.netlify.app/',
+    live: 'https://foodapp-frontend-z1zg.onrender.com/',
   },
   {
     name: 'Resume Builder',
@@ -164,58 +175,56 @@ export const work = [
 
 export const experience = [
   {
-    title: 'Full-Stack Engineer',
-    company: 'SISL Infotech Pvt. Ltd.',
-    date: 'Feb 2025 to now',
+    title: 'Consultant — IT (Full-Stack AI Engineer)',
+    company: 'Utility Powertech Limited',
+    date: 'Aug 2026 to now',
     current: true,
     points: [
-      'Audited enterprise sites and drove 100+ findings to closure, mapping assets and IPs into dashboards built with Angular, Node.js, MySQL and REST APIs.',
-      'Delivered a pre-delivery inspection workflow end to end: request lifecycle, verify and reject trails, bulk uploads, automated reminders.',
-      'Shipped a CPG submission and approval process with checklists, approver routing, SLA timers, role-based views and audit logs, plus a role-based bill tracking system.',
-      'Built the internal mail service the notifications ride on, with retries, health checks and structured logs.',
+      'Own prompt engineering end to end for OpenAI and Claude integrations on a client-facing product feature: design, test and iterate templates until output is consistently reliable and production-ready.',
+      'Integrated an LLM-powered assistant into .NET (C#) backend services, reducing manual review effort before output reached users, from prompt design through API integration.',
+      'Built and shipped Angular UI components consuming .NET REST APIs for core client-facing screens, working directly with product and design to ship iteratively.',
+      'Contributed React components that extend the product AI-assisted feature set, working across both Angular and React front ends on the same platform.',
     ],
   },
   {
-    title: 'Database Administrator',
-    company: 'iONE IT Solutions Pvt. Ltd.',
-    date: 'Feb 2024 to Feb 2025',
+    title: 'Consultant — IT (Full-Stack Engineer, Contract)',
+    company: 'GA Digital Web Word Pvt. Ltd.',
+    date: 'Apr 2026 to Aug 2026',
     points: [
-      'Set up Oracle Linux servers and installed and tuned Oracle Database for performance and reliability.',
-      'Imported client data with impdp, managed backups and held data integrity through migrations.',
-      'Created and managed tablespaces to keep storage and query performance in line.',
-      'Handled patching, backup and recovery with RMAN, and configured Oracle Data Guard for disaster recovery.',
+      'Cut repeat support queries about 30% by building a RAG layer over internal documents (embeddings and vector search) exposed via REST APIs, tuning chunking against measured retrieval hit rates.',
+      'Cut document lookup and review time about 70% by shipping a multi-agent LLM (OpenAI/Claude) document-search and summarization assistant into the Node.js/.NET stack, with prompt templating, output validation and RBAC-gated access.',
+      'Delivered 3 production modules end to end (requirements to deploy) on Node.js/Express, .NET (C#) and React/Angular for Energy Efficiency Services Limited (EESL), a Government of India PSU, with zero missed release deadlines using AWS, Docker and GitHub Actions CI/CD.',
+      'Designed 6+ JWT-secured REST endpoints per module over MySQL, MSSQL and PostgreSQL, paired with reusable React/Angular components.',
     ],
   },
   {
-    title: 'Software Engineer, Backend',
+    title: 'Consultant — IT (Full-Stack Engineer)',
+    company: 'SISL Infotech Pvt. Ltd.',
+    date: 'Feb 2025 to Mar 2026',
+    points: [
+      'Cut notification failures about 90% by building Dockerized email-notification microservices with retry logic, health monitoring and structured logging.',
+      'Cut manual compliance-review time about 60% by shipping LLM-powered auto-summarization of compliance findings and notification drafting into the production email-microservice pipeline.',
+      'Resolved 100+ compliance findings across 15+ enterprise site audits, building React/Angular dashboards over Node.js/.NET REST APIs backed by MySQL/MSSQL.',
+      'Secured 4 enterprise modules with JWT and Azure AD RBAC; delivered a compliance/approval system (SLA tracking, audit logs) and a role-based Bill Tracking System.',
+    ],
+  },
+  {
+    title: 'Database Engineer',
+    company: 'iONE IT Solution Pvt. Ltd.',
+    date: 'May 2024 to Jan 2025',
+    points: [
+      'Sustained about 99% uptime engineering production database HA: schema design, indexing, backups, point-in-time recovery and standby replication.',
+      'Cut query times about 70% via EXPLAIN ANALYZE-driven tuning and indexing; automated backup, recovery and migration pipelines across environments.',
+      'Applied scikit-learn to production database telemetry for anomaly detection and query-performance forecasting, building feature pipelines for downstream ML and vector-search workloads.',
+    ],
+  },
+  {
+    title: 'Backend Engineer',
     company: 'AAL Infotech Pvt. Ltd.',
-    date: 'Jul 2023 to Dec 2024',
+    date: 'Jul 2023 to Apr 2024',
     points: [
-      'Built backend services in Node.js and Spring Boot against MySQL and MongoDB.',
-      'Wrote REST APIs on Express and Spring Boot, tuned for throughput.',
-      'Implemented secure authentication with JWT in Node and Spring Security in Java.',
-      'Integrated Multer for image upload handling, verified through Postman.',
-      'Cut data retrieval time with MongoDB aggregation pipelines.',
-    ],
-  },
-  {
-    title: 'Web Developer Intern',
-    company: 'PepCoding',
-    date: 'Oct 2021 to Apr 2022',
-    points: [
-      'Fixed critical bugs across frontend and backend and brought error reports down.',
-      'Built sites alongside senior developers with HTML, CSS and Express.js, lifting team throughput by about a quarter.',
-    ],
-  },
-  {
-    title: 'Web Developer',
-    company: 'Kuviba',
-    date: 'Jul 2021 to Sep 2021',
-    points: [
-      'Built and maintained web applications in PHP.',
-      'Worked with designers and developers to get features out.',
-      'Implemented responsive layouts and cross-browser fixes.',
-      'Reviewed code and gave other developers useful notes.',
+      'Improved API response times about 60% building Node.js/Express REST APIs over MongoDB with schema and aggregation-pipeline design.',
+      'Built backend data pipelines and integrated AI/LLM APIs into Node.js/Express endpoints to power AI-driven product features.',
     ],
   },
 ];
