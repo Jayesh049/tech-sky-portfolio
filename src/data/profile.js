@@ -150,17 +150,6 @@ export const work = [
     live: 'https://foodapp-frontend-z1zg.onrender.com/',
   },
   {
-    name: 'Resume Builder',
-    year: '2023',
-    kind: 'Document tool',
-    description:
-      'Pick a template, fill it with your details, download the finished resume. State lives in Redux and persists to Firebase, so a half-written resume is still there tomorrow.',
-    stack: ['React', 'Redux', 'Firebase'],
-    image: 'work/rb.webp',
-    code: 'https://github.com/Jayesh049/ResumeBuilder',
-    live: 'https://resume-builder-4a981.web.app/',
-  },
-  {
     name: 'Genrich Restaurant',
     year: '2022',
     kind: 'Interface study',
